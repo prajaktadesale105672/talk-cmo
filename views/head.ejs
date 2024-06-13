@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<% pendingCount=parseInt(userPendingPosts.assigned_count + userPendingPosts.draft_count);
+  seoTeamCount=parseInt(teamPending[1].draft) + parseInt(teamPending[1].assigned); rootVar='http://localhost:3000' ;
+  etVar='http://localhost' ; %>
+
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%if(pendingCount){%>
+      <title>[ <%= pendingCount %> ] <%=title %>
+      </title>
+      <%}else{%>
+        <title>
+          <%=title %>
+        </title>
+        <%}%>
+          <meta name="robots" content="noindex,nofollow">
+          <!-- Add your CSS links or stylesheets here -->
+          <link rel="icon" href="/uploads\android-icon-192x192.png" />
+          <link rel="stylesheet" href="/assets/css/bootstrap/bootstrap-icons-1.11.3/font/bootstrap-icons.css">
+          <link rel="stylesheet" href="/assets/css/bootstrap/bootstrap.min.css">
+          <link rel="stylesheet" href="/assets/css/style.css">
+
+          <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Poppins:wght@300;400;500;600&display=swap"
+            rel="stylesheet">
+          <link rel="stylesheet" href="/assets/datatable/dataTables.bootstrap5.min.css">
+          <link rel="stylesheet" href="/assets/datatable/responsive.bootstrap5.min.css">

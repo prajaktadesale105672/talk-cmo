@@ -1,0 +1,446 @@
+<%- include('head') %>
+
+
+  </head>
+
+  <body>
+
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class="content_wrapper">
+
+              <div class="container">
+                <!-- <h3 class="">Sub-Category</h3> -->
+
+              </div>
+              <div class="container app_container">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <h4 class="mb-4">Sub-Category List</h4>
+                  </div>
+                  <% if (permissions.find(perm=> perm.permission_name === "Category Management" && perm.create == 1)) {
+                    %>
+                    <div class="col-sm-6 text-sm-end">
+                      <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addSubCatModal">
+                        Add Sub-Category</button>
+                    </div>
+                    <% }%>
+                </div>
+
+
+                <table id="subCategoryTable" class="row-border table table-striped table-responsive wrap" width="100%">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Category Name</th>
+                      <th>Slug Name</th>
+                      <th>Created At</th>
+                      <th>Updated At</th>
+                      <% if (permissions.find(perm=> perm.permission_name === "Category Management" && (perm.update == 1
+                        || perm.delete == 1))) { %>
+                        <th class="text-center">Action</th>
+                        <%}%>
+                    </tr>
+                  </thead>
+                  <tbody id="userInfo1">
+                    <% subcategory.forEach(subCat=> { %>
+                      <tr class="odd">
+                        <td>
+                          <%= subCat.subcat_id %>
+                        </td>
+                        <td>
+                          <%= subCat.subcat_name %>
+                        </td>
+                        <td>
+                          <%= subCat.subcat_slug %>
+                        </td>
+                        <td>
+                          <%= new Date(subCat.created_at).toLocaleDateString('en-GB', { day: 'numeric' , month: 'short'
+                            , year: 'numeric' }) %>
+                        </td>
+                        <td>
+                          <%= new Date(subCat.updated_at).toLocaleDateString('en-GB', { day: 'numeric' , month: 'short'
+                            , year: 'numeric' }) %>
+                        </td>
+                        <% if (permissions.find(perm=> perm.permission_name === "Category Management" && (perm.update ==
+                          1 || perm.delete == 1))) { %>
+                          <td>
+                            <div class="text-center">
+                              <% if (permissions.find(perm=> perm.permission_name === "Category Management" &&
+                                (perm.update == 1))) { %>
+                                <span class=" me-2">
+                                  <i class="bi bi-pencil-square updateBtn" data-subcatname="<%= subCat.subcat_name %>"
+                                    id="<%= subCat.subcat_id %>"></i>
+                                </span>
+                                <%}%>
+                                  <% if (permissions.find(perm=> perm.permission_name === "Category Management" && (
+                                    perm.delete == 1))) { %>
+                                    <span class="">
+                                      <i class="bi bi-trash3-fill deleteBtn" data-subcatname="<%= subCat.subcat_name %>"
+                                        id="<%= subCat.subcat_id %>"></i>
+                                    </span>
+                                    <%}%>
+                            </div>
+
+                          </td>
+                          <%}%>
+                      </tr>
+                      <% }); %>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+
+          </div>
+
+
+
+      </div>
+
+
+
+
+
+      <!-- Modal -->
+      <div class="modal fade" id="addSubCatModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="addSubCatModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="addSubCatModalLabel">Add new Sub-Category</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addSubCategory">
+              <div class="modal-body">
+
+                <div class="col-12 mb-2">
+                  <label for="addSubCatName" class="form-label">Sub-Category Name<span class="text-danger">*</label>
+                  <input type="text" class="form-control form-control-sm" id="addSubCatName" name="addSubCatName"
+                    required data-parsley-pattern="^(?![\d,]+$)[A-Za-z\d'.,@-][A-Za-z\d'.,@\s-]*[A-Za-z\d'.,@-]$"
+                    data-parsley-required-message=" Sub Category Name is required">
+                </div>
+                <div class="col-12 mb-2">
+                  <label for="addSubCatSlug" class="form-label">Sub-Category Slug Name<span
+                      class="text-danger">*</label>
+                  <input type="text" class="form-control form-control-sm" id="addSubCatSlug" name="addSubCatSlug"
+                    required data-parsley-pattern="^(?!^[0-9]+$)(?!^[^a-z0-9]+$)[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    data-parsley-required-message="Slug Name is required"
+                    data-parsley-pattern-message="Sub-Category slug should be in lowercase letters and contain dashes between words. Avoid using spaces, uppercase letters, numbers, or special characters.">
+
+
+                </div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-sm btn-primary">Add</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal -->
+      <div class="modal fade" id="updateCategoryModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="updateCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="updateCategoryModalLabel">Edit Sub-Category - <span
+                  id="editSubCatName"></span></h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="updateCategory">
+              <div class="modal-body">
+
+                <div class="col-12 mb-2">
+                  <input type="hidden" id="update_subCatId" name="update_subCatId" value="">
+                  <label for="update_subCatName" class="form-label">Sub-Category Name<span class="text-danger">*</label>
+                  <input type="text" class="form-control form-control-sm" id="update_subCatName"
+                    name="update_subCatName" required
+                    data-parsley-pattern="^(?![\d,]+$)[A-Za-z\d'.,@-][A-Za-z\d'.,@\s-]*[A-Za-z\d'.,@-]$"
+                    data-parsley-required-message="Sub-Category Name is required">
+                </div>
+                <div class="col-12 mb-2">
+                  <label for="update_subCatSlug" class="form-label">Sub-Category Slug Name<span
+                      class="text-danger">*</label>
+                  <input type="text" class="form-control form-control-sm" id="update_subCatSlug"
+                    name="update_subCatSlug" required
+                    data-parsley-pattern="^(?!^[0-9]+$)(?!^[^a-z0-9]+$)[a-z0-9]+(?:-[a-z0-9]+)*$"
+                    data-parsley-required-message="Sub-Category Slug is required"
+                    data-parsley-pattern-message="Sub-Category slug should be in lowercase letters and contain dashes between words. Avoid using spaces, uppercase letters, numbers, or special characters.">
+
+
+                </div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-sm btn-warning">Update</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+      <%- include('contentFooter') %>
+
+
+        <script>
+
+          $(document).ready(function () {
+
+            // $('input[name="addSubCatName"],  input[name="update_subCatName"]').on('input', function () {
+            //     // Get the value of the input field
+            //     var name = $(this).val();
+
+            //     // Replace spaces and slashes with hyphens and update the value of the sub_name input field
+            //     var subName = name.toLowerCase().replace(/[\s/]+/g, '-');
+            //     $('#addSubCatSlug, #update_subCatSlug').val(subName);
+            //   });
+
+
+            // 
+            $('input[name="addSubCatName"],input[name="update_subCatName"]').on('input change', function () {
+              // Get the value of the input field
+              var name = $(this).val();
+
+              // Replace spaces and slashes with hyphens and convert to lowercase
+              var subName = name.toLowerCase().replace(/[\s/]+/g, '-');
+
+              // Use setTimeout to introduce a delay for autofill processing
+              setTimeout(function () {
+                // Update the value of the slug input field
+                $('#addSubCatSlug, #update_subCatSlug').val(subName);
+              }, 100);
+            });
+
+
+
+            $('#subCategoryTable').DataTable({
+              'columnDefs': [
+                { width: 30, targets: 0 },
+
+                // { width: 100, targets: 6 },
+                { responsivePriority: 2, targets: -1 },
+                { responsivePriority: 3, targets: -2 },
+              ],
+            });
+
+
+
+            $('#addSubCategory, #updateCategoryModal').parsley();
+
+
+            $('#subCategoryTable').on('click', '.updateBtn', async function () {
+              console.log('update btn clicked');
+              console.log(this.id);
+              const updateId = this.id;
+              try {
+                const response = await fetch(`api/category/get_subcategory/${updateId}`).then(response => {
+                  if (!response.ok) {
+                    throw new error(`Cat data not received`);
+                  }
+                  return response.json();
+                }).then(data => {
+                  console.log(data);
+                  const catInfo = data.subCategory[0];
+                  console.log(catInfo.cat_name);
+                  $('#update_subCatName').val(catInfo.subcat_name);
+                  $('#update_subCatSlug').val(catInfo.subcat_slug);
+                  $('#update_subCatId').val(updateId);
+                  $('#editSubCatName').html(catInfo.subcat_name);
+                  $("#updateCategoryModal").modal('show');
+
+                })
+              } catch (error) {
+                Swal.fire({
+                  text: `Sub-Category Error!`,
+                  icon: "error",
+                });
+                // console.log(error);
+              }
+            })
+
+            $('#subCategoryTable').on('click', '.deleteBtn', async function () {
+              console.log('delete btn clicked');
+              console.log(this.id);
+              console.log($(this).data('subcatname'));
+              const deleteId = this.id;
+              const deleteCat = $(this).data('subcatname');
+              Swal.fire({
+                // text: "Are you sure to Delete",
+                // title: `${deleteCat}`,
+                // text: "You won't be able to revert this!",
+                icon: "warning",
+                html: `<span>Are you sure to Delete</span><h4>${deleteCat}</h4><span>You won't be able to revert this!</span>`,
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+
+              }).then(async (result) => {
+                if (result.isConfirmed) {
+
+
+                  try {
+                    const response = await fetch(`api/category/delete_subcategory/${deleteId}`).then(response => {
+                      if (!response.ok) {
+                        throw new error(`Cat data not received`);
+                      }
+                      return response.json();
+                    }).then(data => {
+                      Swal.fire({
+                        text: `Sub-Category Deleted!`,
+                        icon: "success",
+
+                      }).then((result) => {
+                        location.reload();
+                      })
+
+                    })
+                  } catch (error) {
+                    Swal.fire({
+                      text: `Sub-Category Delete Error!`,
+                      icon: "error",
+                    });
+                    // console.log(error);
+                  }
+                }
+              })
+            })
+
+
+            $('#addSubCategory').submit(async function (e) {
+              e.preventDefault();
+              if ($(this).parsley().isValid()) {
+
+                const sName = $('#addSubCatName').val();
+                const sSName = $('#addSubCatSlug').val();
+                const data = {
+                  subcat_name: sName,
+                  subcat_slug: sSName
+                }
+                try {
+                  const response = await fetch('api/category/add_subcategory', {
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                  })
+
+                  if (response.ok) {
+
+                    setTimeout(() => {
+                      $("#addSubCatModal").modal('hide');
+                      Swal.fire({
+                        text: `New Sub-Category ${sName} Added!`,
+                        icon: "success",
+
+                      }).then((result) => {
+
+                        location.reload();
+                      })
+
+                    }, 500)
+                    console.log('cat added');
+                  }
+                  else {
+                    const responseData = await response.json();
+                    throw new Error(responseData.error);
+                  }
+                } catch (error) {
+                  Swal.fire({
+                    text: error.message,
+                    icon: "error",
+                  });
+                  // console.log(error);
+                }
+
+
+              }
+
+
+            });
+
+
+            $('#updateCategory').submit(async function (e) {
+              e.preventDefault();
+              if ($(this).parsley().isValid()) {
+
+                const sName = $('#update_subCatName').val();
+                const sSName = $('#update_subCatSlug').val();
+                const cId = $('#update_subCatId').val();
+                const data = {
+                  subcat_id: cId,
+                  subcat_name: sName,
+                  subcat_slug: sSName
+                }
+
+                console.log(data);
+
+                try {
+                  const response = await fetch('api/category/udpate_subcategory', {
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                  })
+
+                  if (response.ok) {
+
+                    setTimeout(() => {
+                      $("#updateCategoryModal").modal('hide');
+                      Swal.fire({
+                        text: `Sub-Category Updated!`,
+                        icon: "success",
+
+                      }).then((result) => {
+
+                        location.reload();
+                      })
+
+                    }, 500)
+                    console.log('Sub-Category Updated');
+                  }
+                  else {
+                    const responseData = await response.json();
+                    throw new Error(responseData.error);
+                  }
+                } catch (error) {
+                  Swal.fire({
+                    text: error.message,
+                    icon: "error",
+                  });
+                  console.log(error);
+                }
+
+
+              }
+
+
+            });
+
+
+
+
+
+
+          })
+        </script>
+
+
+  </body>
+
+  </html>

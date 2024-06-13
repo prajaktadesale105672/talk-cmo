@@ -1,0 +1,267 @@
+<%- include('head') %>
+  </head>
+
+  <body>
+
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class="content_wrapper">
+
+              <div class="container app_container">
+
+                <h4 class="mb-4 ">New Ad Banner</h4>
+                <form id="advAddForm">
+
+                  <div class="row">
+                    <div class="col-md-8">
+                      <div class="text-center banner_wrapper mb-2">
+                        <img id="banner_img_preview" class="banner_preview_img"
+                          src="../images/blank-image.svg"
+                          alt="Image Preview">
+                      </div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <input type="hidden" id="session_user" name="session_user" value="<%= user.userid %>">
+                      <div class="col-12 mb-2">
+
+                        <label for="banner_type" class="form-label">Banner Type<span
+                            class="text-danger">*</span></label>
+                        <select class="form-select form-select-sm " id="banner_type" name="banner_type"
+                          aria-label="Small select example" required
+                          data-parsley-required-message="Banner Image Type is required">
+                          <option selected value="" disabled>Select Type</option>
+                          <option value="Banner-1">Banner-1 (300 * 600)</option>
+                          <option value="Banner-2">Banner-2 (300 * 250)</option>
+                          <option value="Banner-3">Banner-3 (900 * 50)</option>
+
+                        </select>
+
+                      </div>
+                      <div class="col-12 mb-2">
+                        <label for="banner_name " class="form-label">Banner Name<span
+                            class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-sm" id="banner_name" name="banner_name"
+                          required data-parsley-required-message="Banner Name is required"
+                          data-parsley-pattern="^(?!\s)(.*\S)?(?<!\s)$" disabled>
+                      </div>
+                      <div class="col-12 mb-2">
+                        <label for="dest_url" class="form-label">Destination Url<span
+                            class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-sm" id="dest_url" name="dest_url" required
+                          data-parsley-required-message="Destination Url is required"
+                          data-parsley-pattern="^(https?):\/\/[^\s/$.?#].[^\s]*\.[^\s\/$?#].[^\s]*$" disabled>
+                      </div>
+
+                      <div class="col-12 mb-2">
+                        <label for="banner_img" class="form-label">Banner Image<span
+                            class="text-danger">*</span></label>
+                        <input class="form-control form-control-sm" id="banner_img" type="file" required
+                          data-parsley-required-message="Banner Image is required" disabled>
+                      </div>
+                      <div id="errorMsg"></div>
+                      <div class="text-center">
+                        <button type="submit" class="btn btn-sm btn-primary mt-2 addBtn" >Add Banner</button>
+                        <!-- </div> -->
+                      </div>
+                    </div>
+
+                  </div>
+                  <!-- <div class="row"> -->
+
+                </form>
+                <!-- <span id="login-status"></span> -->
+
+              </div>
+
+
+
+            </div>
+          </div>
+      </div>
+
+
+
+      <%- include('contentFooter') %>
+
+
+        <script>
+          $(document).ready(function () {
+            var _URL = window.URL || window.webkitURL;
+
+            $('#banner_type').on('change', function() {
+                var selectedValue = $(this).val();
+                if (selectedValue != "") {
+                    $('input').prop('disabled', false);
+                    checkImage();
+                } else {
+                    $('input').prop('disabled', true);
+                }
+            });
+
+            $('#banner_img').on('change', function(e) {
+              // var input = this;
+             
+              // if (input.files && input.files[0]) {
+              //   console.log(input.files[0].name);
+              //   $('#banner_img_preview').attr('src', URL.createObjectURL(input.files[0].name));
+              // }
+              checkImage();
+            });
+
+            function checkImage(){
+               // var file = this.files[0];
+               var file = $('#banner_img')[0].files[0]
+                var errorDiv = $('#errorMsg');
+                var bannerType = $('#banner_type').val();
+                var previewImg = $('#banner_img_preview');
+                if (file) {
+                  console.log(file.type);
+                  if (file.type === "image/png" || file.type === "image/jpeg" || file.type === "image/webp") {
+                  
+
+
+
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                      previewImg.attr('src', e.target.result);
+                        var img = new Image();
+                        img.src = e.target.result;
+                       
+                        img.onload = function() {
+                            var width = this.width;
+                            var height = this.height;
+                          console.log(width,height);
+                          var ratio = width / height;
+                          console.log({ratio});
+                            // switch (bannerType) {
+                            //     case 'Banner-1':
+                            //         if ((width > 279 && width < 321) && (height > 579 && height < 621)) {
+                            //             errorDiv.text('');
+                            //             $(".addBtn").prop('disabled', false);
+                            //         } else {
+                            //             errorDiv.text('Invalid resolution Banner 1. Expected: ~ (300 x 600)');
+                            //             $(".addBtn").prop('disabled', true);
+                            //             $('#banner_img').parsley().addError('Invalid resolution Banner 1. Expected: ~ (300 x 600)');
+                            //         }
+                            //         break;
+                            //     case 'Banner-2':
+                            //         if ((width > 279 && width < 321) && (height > 219 && height < 271)) {
+                            //           $(".addBtn").prop('disabled', false);
+                            //             errorDiv.text('');
+                            //         } else {
+                            //             errorDiv.text('Invalid resolution Banner 2. Expected: ~ 300x250');
+                            //             $(".addBtn").prop('disabled', true);
+                            //             $('#banner_img').parsley().addError('Invalid resolution Banner 2. Expected: ~ 300x250');
+                            //         }
+                            //         break;
+                            //     case 'Banner-3':
+                            //         if ((width > 879 && width < 921) && (height > 29 && height < 61)) {
+                            //           $(".addBtn").prop('disabled', false);
+                            //             errorDiv.text('');
+                            //         } else {
+                            //             errorDiv.text('Invalid resolution Banner 3. Expected: ~ 900x50');
+                            //             $(".addBtn").prop('disabled', true);
+                            //             $('#banner_img').parsley().addError('Invalid resolution Banner 3. Expected: ~ 900x50');
+                            //         }
+                            //         break;
+                            //     default:
+                            //         errorDiv.text('Invalid banner type');
+                            //         $('#banner_img').parsley().addError('Invalid banner type.');
+                            //         $(".addBtn").prop('disabled', true);
+                            // }
+                        };
+                    }
+                  } else{
+                     errorDiv.text('Invalid file type. Please select an image file.');
+                     $(".addBtn").prop('disabled', true);
+                     previewImg.attr('src', "../images/blank-image.svg");
+                     $('#banner_img').parsley().addError('Invalid file type. Please select an image file.');
+                    return;
+                  }
+
+                    reader.readAsDataURL(file);
+                }
+            }
+
+
+            
+
+            $('#advAddForm').parsley();
+
+
+
+
+
+            $("#banner_type").on("change", function (e) {
+              console.log($(this).val());
+            })
+
+
+            $('#advAddForm').submit(async function (e) {
+              e.preventDefault();
+              console.log('form submit');
+              // Check if the form is valid
+              if ($(this).parsley().isValid()) {
+                console.log('chceing valid');
+                const banner_type = $("#banner_type").val();
+                const banner_name = $("#banner_name").val();
+                const dest_url = $("#dest_url").val();
+                const banner = $('#banner_img')[0];
+
+                const formData = new FormData();
+                formData.append('banner_type', banner_type);
+                formData.append('banner_name', banner_name);
+                formData.append('dest_url', dest_url);
+                formData.append('banner_img', banner.files[0]);
+                // console.log({ formData });
+                try {
+                  const response = await fetch("<%=rootVar%>/api/advertisement/create-ad", {
+                    method: "POST",
+                    body: (formData),
+                  });
+
+                  if (response.ok) {
+                    console.log('success');
+                    Swal.fire({
+                      text: "Advertisement banner has been created successfully!",
+                      icon: "success",
+                      showCancelButton: false,
+                      confirmButtonText: 'OK',
+                      // timer: 2000
+                    }).then((result) => {
+                      window.location.href = '<%=rootVar%>/advertisement-all';
+                      // window.location.reload();
+
+                    })
+                    // const responseData = await response.json();
+                    // document.getElementById("login-status").textContent = "Login successful. Welcome, " + responseData.autToken;
+                  } else {
+                    const responseData = await response.json();
+                    throw new Error(responseData.message);
+
+
+
+                  }
+                } catch (error) {
+                  Swal.fire({
+                    text: error,
+                    icon: "error",
+                    // timer: 2000
+                  })
+                  // Handle network errors
+
+                }
+              }
+            });
+          })
+        </script>
+
+
+  </body>
+
+  </html>

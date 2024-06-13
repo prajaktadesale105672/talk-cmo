@@ -1,0 +1,459 @@
+<%- include('head') %>
+<link rel="stylesheet" href="/assets/flatpickr/flatpickr.min.css">
+
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <body>
+
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class="content_wrapper">
+              <div class="container">
+                <!-- <h3 class="">Post</h3> -->
+
+              </div>
+              <div class="container app_container">
+                <div class="row ">
+                  <div class="col-sm-6">
+                    <h4 class="mb-4">All Posts</h4>
+                  </div>
+                  <% if (permissions.find(perm=> perm.permission_name === "Post Management" && (perm.create == 1))) { %>
+                    <div class="col-sm-6 text-sm-end">
+                      <a href="postcreate" class="btn btn-sm btn-primary"> Create New Post</a>
+                    </div>
+                    <%}%>
+                </div>
+                <div class="row py-2 bg-light">
+                  <div class="col-md-4">
+                    <label class="searchLabel" for="authorSearch">Author</label>
+                   <select class="form-select select-2 mb-3" id="authorSearch" data-placeholder="Select Author" >
+                    <option></option>
+                        <% authorData.forEach(function(author){ %>
+                            <option value="<%= author.author_id%>">
+                                <%=author.author_display_name%>
+                            </option>
+                            <%}) %>
+                        </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="searchLabel" for="categorySearch">Category</label>
+                   <select class="form-select select-2 mb-3" id="categorySearch" data-placeholder="Select Category" >
+                    <option></option>
+                        <% catData.forEach(function(cat){ %>
+                            <option value="<%= cat.cat_id %>"><%= cat.cat_name %>
+                            </option>
+                            <% }) %>
+                        </select>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="searchLabel" for="subCatSearch">Sub-Category</label>
+                   <select class="form-select select-2 mb-3" id="subCatSearch" data-placeholder="Select Sub-Category" >
+                    <option></option>
+                        <% subCatData.forEach(function(subCat){ %>
+                            <option value="<%= subCat.subcat_id %>">
+                                <%= subCat.subcat_name %>
+                            </option>
+                            <% }) %>
+                        </select>
+                  </div>
+                  <div class="col-md-4 ">
+                    <label class="searchLabel" for="dateRange">Date</label>
+                    <input class="form-control form-control-sm" id="dateRange"
+                        placeholder="Select Publish Date">
+                  </div>
+                  <div class="col d-flex justify-content-end align-items-end">
+                    <input type="reset" class="btn btn-sm btn-warning resetForm" value="Reset">
+                  </div>
+                </div>
+            
+                <div class=" mt-4">
+                  <table id="post_data" class="postTable table table-striped display table-responsive " width="100%">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Post Title</th>
+                        <th>Publish Date</th>
+                        <th>Category</th>
+                        <!-- <th>Category slug</th> -->
+                        <th class="none">Sub-Category</th>
+                        <th class="none">Author</th>
+                        <th>User</th>
+                        <th class="none">Comment</th>
+                        <th>Status</th>
+                        <% if (["Admin", "Content Head" , "Marketing Head","SEO Team","SEO Manager","Publisher" ].includes(user.role)) { %>
+                          <th class="text-center">Action</th>
+                          <%}%>
+                            <!-- <th></th> -->
+
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+      </div>
+     
+
+      <%- include('contentFooter') %>
+
+        <script src="//cdn.datatables.net/plug-ins/1.13.7/pagination/input.js"> </script>
+        <script src="/assets/flatpickr/flatpickr.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+        <script>
+          $(document).ready(function () {
+
+            $('.resetForm').on('click',function(){
+                dateRangePicker.clear();
+                $('#authorSearch').val(null).trigger('change');
+                $('#categorySearch').val(null).trigger('change');
+                $('#subCatSearch').val(null).trigger('change');
+                dataTable.ajax.reload();
+            })
+
+            
+
+            var dateRangePicker = $("#dateRange").flatpickr({ 
+                dateFormat: "Y-m-d",
+                mode: "range",
+                clear: false,
+                onClose: function(selectedDates, dateStr, instance) {
+                    dataTable.ajax.reload();
+                },                                
+            });
+
+            
+
+            $('.select-2').select2({
+                allowClear: true,
+                containerCssClass: "select2--small",
+    dropdownCssClass: "select2--small",
+                placeholder: $( this ).data( 'placeholder' ),
+                
+            });
+
+            // auto reload post data
+            //  setInterval(() => {
+            //       console.log('Auto-reload');
+            //       location.reload();
+            //     }, 60000);
+
+
+
+            
+
+              var dataTable = $('#post_data').DataTable({
+                // 'processing': true,
+                'serverSide': true,
+                'serverMethod': 'get',
+                "autoWidth": false,
+                language: {
+                  infoFiltered: ""
+                },
+                // responsive: {
+                //   details: {
+                //     display: DataTable.Responsive.display.modal({
+                //       header: function (row) {
+                //         var data = row.data();
+                //         console.log({data});
+                //         console.log(data.id);
+                //         return 'Details for ' + data.id + ' ' + data[1];
+                //       }
+                //     }),
+                //     renderer: DataTable.Responsive.renderer.tableAll({
+                //       tableClass: 'modal_table'
+                //     })
+                //   }
+                // },
+                'responsive': {
+                  details: true
+                },
+                'ajax': {
+                  'url': '/api/post/allposts',
+                  'type': 'get',
+                  'data': function(data) {
+                    const dateArr = $('#dateRange').val().split(' to ');
+                    data.authorId = $('#authorSearch').val();
+                    data.catId = $('#categorySearch').val();
+                    data.subCatId = $('#subCatSearch').val();
+                    data.searchStartDate = dateArr[0] ? dateArr[0] + ' 00:00:00' : '';
+                    data.searchEndDate = dateArr[1] ? dateArr[1] + ' 23:59:59' : '';
+                    
+                  }
+                },
+                'columnDefs': [
+                  { width: 80, targets: 0 },
+                  { width: 400, targets: 1 },
+
+                  // { width: 100, targets: 6 },
+                  { responsivePriority: 2, targets: -1 },
+                  { responsivePriority: 3, targets: -2 },
+                  { width: 100, targets: -1 },
+
+                ],
+                'aaSorting': [],
+                "ordering": false,
+                'columns': [
+                  { data: 'id' },
+                  // {
+                  //   data: null,
+                  //   render: function (data) {
+
+                  //     if ((data.cat_slug == "" || data.cat_slug == null) || (data.post_name == "" || data.post_name == null)) {
+                  //       return '<a class="prev-link" target="_blank">' + data.id + '</a>'
+                  //     } else {
+                  //       if (data.post_status == 'publish') {
+                  //         return '<a class="prev-link" target="_blank" href="<%=etVar%>/' + data.cat_slug + '/' + data.post_name + '">' + data.id + '</a>'
+                  //       } else {
+                  //         return '<a class="prev-link" target="_blank" href="<%=etVar%>/preview/' + data.cat_slug + '/' + data.post_name + '">' + data.id + '</a>'
+                  //       }
+                  //     }
+                  //   }
+                  // },
+                  {
+                    data: null,
+                    render: function (data) {
+
+                      if ((data.cat_slug == 0 || data.cat_slug == null) || (data.post_name == "" || data.post_name == null)) {
+                        return data.post_title
+                      } else {
+                        if (data.post_status == 'publish') {
+                          return '<a class="prev-link" target="_blank" href="<%=etVar%>/' + data.cat_slug + '/' + data.post_name + '">' + data.post_title + '</a>'
+                        } else {
+                          return '<a class="prev-link" target="_blank" href="<%=etVar%>/preview/' + data.cat_slug + '/' + data.post_name + '">' + data.post_title + '</a>'
+                        }
+                      }
+                    }
+                  },
+                  // { data: 'post_title' },
+
+                  {
+                    data: null,
+                    render: function (data) {
+                      return  (data.post_date == null || data.post_date == 'Invalid Date') ? "-"  : new Date(data.post_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                    }
+                  },
+                  { data: 'cat_name' },
+                  // { data: 'cat_slug' },
+                  { data: 'subcat_name' },
+                  { data: 'post_author' },
+                  // { data: 'session_user_name' },
+                  {
+                    data: null,
+                    render: function (data) {
+                     return (data.handover_to_name) ? data.handover_to_name : data.session_user_name;
+                     
+                    }
+                  },
+                  //  { data: 'comments' },
+                  // { data: 'post_status' },
+                  {
+                    data: 'comments',
+                    render: function (data) {
+
+                      return (data && data != "") ? data.split('<br>').at(-2).trim() : '';
+                    }
+
+                  },
+                  {
+                    data: null,
+                    render: function (data) {
+
+
+                     
+                      if (data.post_status == 'publish') {
+                        return `<span class="badge bg-success <%= (['SEO Team','SEO Manager','Publisher','Marketing Head','Admin'].includes(user.role)) ? 'updateStatusBtn' : ''  %>" id="${data.id}">Publish</span>`;
+                      } else {
+                        return `<span class="badge bg-danger <%= (['SEO Team','SEO Manager','Publisher','Marketing Head','Admin'].includes(user.role)) ? 'updateStatusBtn' : ''  %>" id="${data.id}">Unpublish</span>`;
+                      }
+                    }
+                  },
+                  {
+                    data: null,
+                    render: function (data) {
+                      if (data.post_status !== 'publish') {
+                        return '<% if (["Admin", "Content Head", "Marketing Head","SEO Team","SEO Manager","Publisher"].includes(user.role)) { %> <div class="text-center"> <% if (permissions.find(perm=> perm.permission_name === "Post Management" && (perm.update == 1 ))) { %><a class="me-2 updateBtn" href="postedit/' + data.id + '" id="' + data.id + '"><i class="bi bi-pencil-square"></i></a> <%}%> <% if (permissions.find(perm=> perm.permission_name === "Post Management" && ( perm.delete == 1))) { %><span class="deleteBtn" id="' + data.id + '"><i class="bi bi-trash3-fill"></i></span> <%}%> </div> <%}%>';
+                      }
+                      else {
+                        return '<% if (["Admin", "Content Head", "Marketing Head","SEO Team","SEO Manager","Publisher"].includes(user.role)) { %> <div class="text-center"> <% if (permissions.find(perm=> perm.permission_name === "Post Management" && (perm.update == 1 ))) { %><a class="me-2 updateBtn" href="postedit/' + data.id + '" id="' + data.id + '"><i class="bi bi-pencil-square"></i></a> <%}%> <% if (permissions.find(perm=> perm.permission_name === "Post Management" && ( perm.delete == 1))) { %><span class="deleteBtn" id="' + data.id + '"><i class="bi bi-trash3-fill"></i></span> <%}%> </div> <%}%>';
+                        // return '';
+                      }
+
+                       // No edit Option if post status is publish
+                      // return '<% if (["Admin", "Content Head", "Marketing Head"].includes(user.role)) { %> <div class="text-center"> <% if (permissions.find(perm=> perm.permission_name === "Post Management" && (perm.update == 1 ))) { %><a class="me-2 updateBtn" href="postedit/' + data.id + '" id="' + data.id + '"><i class="bi bi-pencil-square"></i></a> <%}%> <% if (permissions.find(perm=> perm.permission_name === "Post Management" && ( perm.delete == 1))) { %><span class="deleteBtn" id="' + data.id + '"><i class="bi bi-trash3-fill"></i></span> <%}%> </div> <%}%>';
+                    }
+                  },
+
+
+
+                ]
+              });
+
+            
+
+              $(".select-2").on('change',function(e){
+                e.preventDefault();
+                console.log('chnaging datatable');
+                dataTable.ajax.reload();
+              })
+
+
+
+            $('#post_data').on('click', '.deleteBtn', async function () {
+              console.log('delete btn clicked');
+              const deleteId = this.id;
+
+              Swal.fire({
+                // text: "Are you sure to Delete",
+                // title: `${deleteCat}`,
+                // text: "You won't be able to revert this!",
+                icon: "warning",
+                html: `<span>Are you sure to Delete Post</span><h4>${deleteId}</h4><span>You won't be able to revert this!</span>`,
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+
+              }).then(async (result) => {
+                if (result.isConfirmed) {
+                  console.log('confimed');
+
+                  try {
+                    const response = await fetch(`<%=rootVar%>/api/post/delete_post/${deleteId}`,
+                      {
+                        method: "DELETE",
+                      }).
+                      then(response => {
+                        if (!response.ok) {
+                          throw new error(`Post Data Not received`);
+                        }
+                        return response.json();
+                      }).then(data => {
+                        Swal.fire({
+                          text: `Post Deleted!`,
+                          icon: "success",
+
+                        }).then((result) => {
+                          location.reload();
+                        })
+
+                      })
+                  } catch (error) {
+                    Swal.fire({
+                      text: `Post Delete Error!`,
+                      icon: "error",
+                    });
+                    // console.log(error);
+                  }
+                }
+              })
+            })
+
+
+            $('#post_data').on('click', '.updateStatusBtn', async function () {
+              console.log('post Update btn clicked');
+              const updateId = this.id;
+              const changeStatus = ($(this).html() == "Publish") ? "Draft" : "Publish";
+            
+              // const updatedStatus = updatePostData.post_status == "publish" ? "draft" : "publish";
+              Swal.fire({
+                // text: "Are you sure to Delete",
+                // title: `${deleteCat}`,
+                // text: "You won't be able to revert this!",
+                icon: "warning",
+                html: `<span>Change Post id ${updateId} Status to</span><h4>${changeStatus.charAt(0).toUpperCase() + changeStatus.substr(1).toLowerCase()}</h4>`,
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, Udpate Status!"
+
+              }).then(async (result) => {
+                if (result.isConfirmed) {
+                  console.log('confimed');
+
+                  // try {
+                  //   const response = await fetch(`<%=rootVar%>/api/post/change_post_status/${updateId}`,
+                  //     {
+                  //       method: "PUT",
+                  //     }).
+                  //     then(response => {
+                  //       if (!response.ok) {
+                  //         throw new error(`Post Data Not received`);
+                  //       }
+                  //       return response.json();
+                  //     }).then(data => {
+                  //       console.log({ data });
+                  //       Swal.fire({
+                  //         text: `Post Status changed to ${changeStatus}!`,
+                  //         icon: "success",
+
+                  //       }).then((result) => {
+                  //         location.reload();
+                  //       })
+
+                  //     })
+                  // } catch (error) {
+                  //   Swal.fire({
+                  //     text: `Post Status Change Error!`,
+                  //     icon: "error",
+                  //   });
+                  //   // console.log(error);
+                  // }
+
+                  try {
+                  const response = await fetch(`<%=rootVar%>/api/post/change_post_status/${updateId}`, {
+                    method: 'PUT',
+                  })
+
+                  if (response.ok) {
+
+                   
+                    Swal.fire({
+                          text: `Post Status changed to ${changeStatus}!`,
+                          icon: "success",
+
+                        }).then((result) => {
+                          location.reload();
+                        })
+
+                    
+                    
+                  }
+                  else {
+                    const responseData = await response.json();
+                    throw new Error(responseData.message);
+                  }
+                } catch (error) {
+                  console.log(error);
+                  Swal.fire({
+                    text: error.message,
+                    icon: "error",
+                  });
+                  // console.log(error);
+                }
+
+                }
+              })
+            })
+
+
+
+            
+
+          });
+        </script>
+
+
+
+  </body>
+
+  </html>

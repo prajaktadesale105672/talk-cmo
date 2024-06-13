@@ -1,0 +1,288 @@
+<%- include('head') %>
+  <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css"> -->
+
+  <!-- <link rel="stylesheet" href="/assets/datatable/jquery.dataTables.min.css"> -->
+  <link rel="stylesheet" href="/assets/datatable/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="/assets/datatable/buttons.dataTables.min.css">
+  <!-- <link rel="stylesheet" href="assets/datatable/responsive.dataTables.min.css"> -->
+  <link rel="stylesheet" href="/assets/datatable/responsive.bootstrap5.min.css">
+
+
+  <style>
+    div.dt-top-container {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    div.dt-center-in-div {
+      margin: 0 auto;
+    }
+
+    div.dt-filter-spacer {
+      margin: 10px 0;
+    }
+  </style>
+
+  <body>
+
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class="content_wrapper">
+              <div class="container app_container">
+                <div class="row ">
+
+                  <h4 class="">Contact Leads</h4>
+                  <div class=" mt-3">
+
+                    <table id="contact-leades" class="postTable table table-striped display table-responsive "
+                      width="100%">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>First Name</th>
+                          <th>Last Name</th>
+                          <th>Email</th>
+                          <th>Phone</th>
+                          <th>Message</th>
+                          <th class="none">Comment</th>
+                          <th class="none">Comment By</th>
+                          <!-- <th>Status</th> -->
+                          <th>Date</th>
+                          <th class="text-center">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- modal -->
+
+          <div class="modal fade" id="updateUserModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="updateCategoryModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="updateUserModalLabel">Comment</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="updateCategory">
+                  <div class="modal-body">
+
+                    <div class="col-12 mb-2">
+                      <label for="message" class="form-label">Comment<span class="text-danger">*</label>
+                      <input type="hidden" id="udpate_user_id" name="user_id" value="">
+                      <input type="text" class="form-control form-control-sm" id="addComment" name="addComment" required
+                        data-parsley-pattern="^[A-Za-z\d.,]+(?:\s+[A-Za-z\d.,]+)*[.,]?$"
+                        data-parsley-required-message="  comment is required">
+                    </div>
+
+
+
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-sm btn-warning">Add Comment</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+      </div>
+
+      <%- include('contentFooter') %>
+
+        <script src="/assets/datatable/dataTables.buttons.min.js"></script>
+        <script src="/assets/datatable/jszip.min.js"></script>
+        <script src="/assets/datatable/vfs_fonts.js"></script>
+        <script src="/assets/datatable/buttons.html5.min.js"></script>
+        <script src="/assets/datatable/buttons.print.min.js"></script>
+
+
+        <script>
+          $(document).ready(function () {
+            $('#updateCategory').parsley();
+            $('#contact-leades').on('click', '.updateUser', async function () {
+              console.log('update btn clicked');
+              console.log(this.id);
+              const contactId = this.id;
+              try {
+                const response = await fetch(`api/contact/${contactId}`).then(response => {
+                  if (!response.ok) {
+                    throw new error(`  data not received`);
+                  }
+                  return response.json();
+                }).then(data => {
+                  // console.log(data.data);
+                  const contactInfo = data.data[0];
+                  console.log(contactInfo.id);
+                  console.log(contactInfo.comment);
+                  $('#udpate_user_id').val(contactInfo.id);
+                  $('#addComment').val(contactInfo.comment);
+
+                  $("#updateUserModal").modal('show');
+
+                })
+              } catch (error) {
+                console.log(error);
+              }
+            })
+
+
+
+            $('#updateCategory').submit(async function (e) {
+              e.preventDefault();
+              if ($(this).parsley().isValid()) {
+
+                const comment = $('#addComment').val();
+                const cId = $('#udpate_user_id').val();
+                const userId = '<%= user.userid %>';
+                const data = {
+                  comment: comment,
+                  comment_by: userId
+
+                }
+                console.log('edit comment info', data.comment_by);
+                try {
+                  const response = await fetch(`api/contact/edit/${cId}`, {
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    method: 'PUT',
+                    body: JSON.stringify(data)
+                  })
+
+                  if (response.ok) {
+
+                    setTimeout(() => {
+                      $("#updateCategoryModal").modal('hide');
+                      Swal.fire({
+                        text: `comment added!`,
+                        icon: "success",
+
+                      }).then((result) => {
+
+                        location.reload();
+                      })
+
+                    }, 500)
+                  }
+                  else if (response.status === 401) {
+                    console.log(response);
+                  }
+                } catch (error) {
+                  console.log(error);
+                }
+
+
+              }
+
+
+            });
+
+            function loadData() {
+
+              console.log('data loading');
+
+              var dataTable = $('#contact-leades').DataTable({
+                // 'processing': true,
+                'serverSide': true,
+                'serverMethod': 'get',
+                "autoWidth": false,
+                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                'pageLength': 10,
+                dom: '<"dt-top-container"<l><"dt-center-in-div"B><f>rtip>',
+                buttons: [
+                  'copyHtml5',
+                  'excelHtml5',
+                  'csvHtml5'
+
+                ],
+                // responsive: {
+                //   details: {
+                //     display: DataTable.Responsive.display.modal({
+                //       header: function (row) {
+                //         var data = row.data();
+                //         console.log({data});
+                //         console.log(data.id);
+                //         return 'Details for ' + data.id + ' ' + data[1];
+                //       }
+                //     }),
+                //     renderer: DataTable.Responsive.renderer.tableAll({
+                //       tableClass: 'modal_table'
+                //     })
+                //   }
+                // },
+                'responsive': {
+                  details: true
+                },
+                'ajax': {
+                  'url': '/api/contact/get',
+                  'type': 'get',
+                },
+                'columnDefs': [
+                  { width: 70, targets: 0 },
+                  // { width: 100, targets: 6 },
+                  { responsivePriority: 2, targets: -1 },
+                  { responsivePriority: 3, targets: -2 },
+                  { width: 100, targets: -1, orderable: false }
+                ],
+                'aaSorting': [],
+                'columns': [
+                  // {
+                  //   data: null,
+                  //   render: function (data) {
+                  //     return '<a href="' + data.id + '">' + data.id + '</a>'
+                  //   }
+                  // },
+                  { data: 'id' },
+                  { data: 'first_name' },
+                  { data: 'last_name' },
+                  // { data: 'name' },
+                  { data: 'email' },
+                  { data: 'phone' },
+                  { data: 'message' },
+                  { data: 'comment' },
+                  { data: 'display_name' },
+                  // { data: 'status' },
+                  { data: 'created_at' },
+                  // {
+                  //   data: null,
+                  //   render: function (data) {
+                  //     return new Date(data.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                  //   }
+                  // },
+
+                  {
+                    data: null,
+                    render: function (data) {
+                      // return '<div class="text-center"> <a href="postedit/' + data.id + '" class="updateBtn me-2" id="' + data.id + '"><i class="bi bi-pencil-square"></i></a><a class="deleteBtn" id="' + data.id + '"><i class="bi bi-trash3-fill"></i></a></div>';
+                      // console.log('id ', data.id)
+                      return '<div class="text-center"> <span class=" me-4"><span  class="badge rounded-pill text-bg-warning updateUser" id="' + data.id + '">Edit</span></span></div>';
+                    }
+                  },
+
+                ]
+              });
+
+            }
+            loadData()
+
+          });
+        </script>
+
+
+
+  </body>
+
+  </html>

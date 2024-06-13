@@ -1,0 +1,158 @@
+<%- include('head') %>
+
+  </head>
+
+  <body>
+
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class="content_wrapper">
+
+
+
+
+                  <div class="container">
+                    <!-- <h3 class="">Category</h3> -->
+                   
+                  </div>
+              <div class="container app_container">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <h4 class="mb-4 ">SEO Team <span class="fs-5"> Pending Post</span></h4>
+                  </div>
+                 
+                </div>
+
+
+                <table id="userPostTable" class="table table-striped display table-responsive" width="100%">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Post Title</th>
+                      <th >Category</th>
+                      <th>Publish Date</th>
+                      <th class="none">Sub-Category</th>
+                      <th class="none">Status</th>
+                      <th>User</th>
+                      <th class="none">Comment</th>
+                      <th >Last Save</th>
+                      <% if (permissions.find(perm => perm.permission_name === "Post Management" && (perm.update == 1 || perm.delete == 1))) { %>
+                      <th class="text-center">Action</th>
+                      <%}%>
+                    
+                    </tr>
+                  </thead>
+                  <tbody id="userInfo1">
+                    <% teamPosts.forEach(post=> { %>
+                      <tr class="odd">
+                        <td>
+                          <%= post.id %>
+                        </td>
+                        
+                        <td>
+                         
+                          <% if ((post.cat_slug=="" || post.cat_slug==null) || (post.post_name=="" || post.post_name==null)) {%>
+
+                            <%=post.post_title%>
+                             <%} else { if (post.post_status=='publish' ) { %>
+
+                                 <a class="prev-link" target="_blank" href="<%=etVar%>/<%=post.cat_slug%>/<%=post.post_name%>">' +post.post_title%></a>
+                               <%} else {%>
+                                 <a class="prev-link" target="_blank"
+                                   href="<%=etVar%>/preview/<%=post.cat_slug%>/<%=post.post_name%>"><%=post.post_title%></a>
+                             <%} 
+                           } %>
+                        </td>
+                        <td>
+                          <%= post.cat_name %>
+                        </td>
+                        <td>
+                          <%= (post.post_date == null || post.post_date == 'Invalid Date') ? "-" : new Date(post.post_date).toLocaleDateString('en-GB', { day: 'numeric' , month: 'short' ,
+                            year: 'numeric' }) %>
+                        </td>
+                      
+                        <td>
+                          <%= post.subcat_name %>
+                        </td>
+                        <td>
+                          <%= (post.handover_to != 0) ? "Assigned" : "Draft"  %>
+                        </td>
+                        <td>
+                          <%= (post.handover_to_name)? post.handover_to_name : post.session_user_name  %>
+                        </td>
+                        
+                        <td>
+                          <%- post.comments.split("<br>").at(-2) %>
+                        </td>
+                  
+                       
+                        <td>
+                          <%=
+                          (post.post_modified == null || post.post_modified == 'Invalid Date') ? new Date(post.post_created).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : new Date(post.post_modified).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+                          %>
+                          
+                        </td>
+                        <% if (permissions.find(perm=> perm.permission_name === "Post Management" && (perm.update == 1 || perm.delete == 1))) { %>
+                          <td class="text-center">
+                            <% if (permissions.find(perm=> perm.permission_name === "Post Management" && (perm.update == 1 ))) { %>
+                              <a href="<%=rootVar%>/postedit/<%= post.id %>" class="updateBtn me-2" id="<%= post.id %>">
+                                <i class="bi bi-pencil-square"></i>
+                              </a>
+                            <%}%>
+                            <% if (permissions.find(perm=> perm.permission_name === "Post Management" && ( perm.delete == 1))) { %>
+                              <a class="deleteBtn" href="<%=rootVar%>/postdelete/<%= post.id %>" id="<%= post.id %>">
+                                <i class="bi bi-trash3-fill"></i>
+                              </a>
+                            <%}%>
+                          </td>
+                        <%}%>
+                        
+                        
+                      </tr>
+                      <% }); %>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+            
+          </div>
+
+
+
+      </div>
+
+      
+        <%- include('contentFooter') %>
+      
+     
+      <script>
+
+        $(document).ready(function () {
+
+          $('#userPostTable').DataTable({
+            "order": [],
+            "autoWidth": false,
+            'columnDefs': [
+            { width: 70, targets: 0 },
+            { width: 300, targets: 1 },
+            { width: 100, targets: 8 },
+
+            ],
+            'responsive': {
+              details: true
+            },
+          });
+
+
+        })
+      </script>
+
+
+  </body>
+
+  </html>

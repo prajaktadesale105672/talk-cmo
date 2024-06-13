@@ -1,0 +1,184 @@
+<%- include('head') %>
+  <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css"> -->
+
+  <!-- <link rel="stylesheet" href="/assets/datatable/jquery.dataTables.min.css"> -->
+  <link rel="stylesheet" href="/assets/datatable/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="/assets/datatable/buttons.dataTables.min.css">
+  <!-- <link rel="stylesheet" href="assets/datatable/responsive.dataTables.min.css"> -->
+  <link rel="stylesheet" href="/assets/datatable/responsive.bootstrap5.min.css">
+
+
+  <style>
+    div.dt-top-container {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    div.dt-center-in-div {
+      margin: 0 auto;
+    }
+
+    div.dt-filter-spacer {
+      margin: 10px 0;
+    }
+  </style>
+
+  <body>
+
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class="content_wrapper">
+              <div class="container app_container">
+                <div class="row ">
+
+                  <h4 class="">Pulished Posts </h4>
+                  <div class=" mt-3">
+
+                    <table id="publish-list" class="postTable table table-striped display table-responsive "
+                      width="100%">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Post Title</th>
+                          <th>Category</th>
+                          <th>Sub-Category</th>
+                          <th class="none">Comments</th>
+                          <th>Status</th>
+                          <th>PostDate</th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+
+      </div>
+
+      <%- include('contentFooter') %>
+
+      <script src="/assets/datatable/dataTables.buttons.min.js"></script>
+
+        <!-- <script src="/assets/datatable/dataTables.buttons.min.js"></script> -->
+        <script src="/assets/datatable/jszip.min.js"></script>
+        <script src="/assets/datatable/vfs_fonts.js"></script>
+        <script src="/assets/datatable/buttons.html5.min.js"></script>
+        <script src="/assets/datatable/buttons.print.min.js"></script>
+
+
+        <script>
+          $(document).ready(function () {
+
+
+            function loadData() {
+
+              console.log('data loading');
+
+              var dataTable = $('#publish-list').DataTable({
+                // 'processing': true,
+                'serverSide': true,
+                'serverMethod': 'get',
+                "autoWidth": false,
+                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                'pageLength': 10,
+                dom: '<"dt-top-container"<l><"dt-center-in-div"B><f>rtip>',
+                buttons: [
+
+
+                ],
+                // responsive: {
+                //   details: {
+                //     display: DataTable.Responsive.display.modal({
+                //       header: function (row) {
+                //         var data = row.data();
+                //         console.log({data});
+                //         console.log(data.id);
+                //         return 'Details for ' + data.id + ' ' + data[1];
+                //       }
+                //     }),
+                //     renderer: DataTable.Responsive.renderer.tableAll({
+                //       tableClass: 'modal_table'
+                //     })
+                //   }
+                // },
+                'responsive': {
+                  details: true
+                },
+                'ajax': {
+                  'url': '/api/dashboard/get/:publish',
+                  'type': 'get',
+                },
+                'columnDefs': [
+                  { width: 90, targets: 0 },
+                  { width: 500, targets: 1 },
+                  { responsivePriority: 2, targets: -1 },
+                  { responsivePriority: 3, targets: -2 },
+                  { width: 100, targets: -1, orderable: false }
+                ],
+                'aaSorting': [],
+                "ordering": false,
+                'columns': [
+
+                  { data: 'id' },
+                  {
+                    data: null,
+                    render: function (data) {
+
+                      if ((data.cat_slug == "" || data.cat_slug == null) || (data.post_name == "" || data.post_name == null)) {
+                        return data.post_title
+                      } else {
+                        if (data.status == 'publish') {
+                          return '<a class="prev-link" target="_blank" href="<%=etVar%>/' + data.cat_slug + '/' + data.post_name + '">' + data.post_title + '</a>'
+                        } else {
+                          return '<a class="prev-link" target="_blank" href="<%=etVar%>/preview/' + data.cat_slug + '/' + data.post_name + '">' + data.post_title + '</a>'
+                        }
+                      }
+                    }
+                  },
+                  { data: 'cat_name' },
+                  { data: 'subcat_name' },
+                  //   { data: 'post_name' },
+                  //   { data: 'comments' },
+                  {
+                    data: 'comments',
+                    render: function (data) {
+
+                      return (data && data != "") ? data.split('<br>').at(-2).trim() : '';
+                    }
+
+                  },
+                  // { data: 'status' },
+                  {
+                      data: 'status',
+                      render: function (data) {
+                        return `Published`;
+                      }
+                    },
+                  { data: 'post_date' }
+
+                ]
+              });
+
+            }
+            loadData()
+
+          });
+        </script>
+
+
+
+  </body>
+
+  </html>

@@ -1,0 +1,34 @@
+<%- include('head') %>
+
+    </head>
+
+    <body>
+
+        <%- include('appHeader') %>
+            <div class="wrapper d-flex align-items-stretch">
+                <%- include('sidebar') %>
+
+                    <!-- Page Content  -->
+                    <div id="content" class="">
+                        <div class="content_wrapper">
+                           
+                                <!-- Variable is not set -->
+                                <div class="center_box">
+                               <h5 class=" text-danger"><%= error%></h5>
+                               <a href="<%=rootVar%>/dashboard" class="btn btn-sm btn-primary ">Dashboard</a>
+                                </div>
+                              
+                        </div>
+                        <%- include('contentFooter') %>
+                    </div>
+            </div>
+
+
+            <footer>
+                <!-- Footer content can be added here -->
+            </footer>
+      
+          
+    </body>
+
+    </html>

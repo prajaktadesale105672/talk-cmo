@@ -1,0 +1,462 @@
+<%- include('head') %>
+<link rel="stylesheet" href="/assets/flatpickr/flatpickr.min.css">
+    </head>
+
+    <body>
+
+        <%- include('appHeader') %>
+            <div class="wrapper d-flex align-items-stretch">
+                <%- include('sidebar') %>
+
+                    <!-- Page Content  -->
+                    <div id="content" class="">
+                        <div class="content_wrapper">
+                            <div class="container">
+                                <!-- <h3 class="">Post</h3> -->
+
+                            </div>
+                            <form id="addPost">
+                                <div class="container app_container">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <h4 class="mb-4">Create Post</h4>
+                                        </div>
+                                        <div class="col-sm-6 text-sm-end">
+                                            <button type="submit" class="btn btn-sm btn-primary submitBtn px-4">
+                                                Draft
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="mb-2">
+                                                <input type="hidden" class="form-control form-control-sm"
+                                                    id="session_user" name="session_user" value="<%=user.userid%>">
+                                                <label for="p_title" class="form-label">Post Title<span
+                                                        class="text-danger">*</span></label>
+                                                <input type="text" class="form-control form-control-sm" id="p_title"
+                                                    name="p_title" required
+                                                    data-parsley-required-message="Post Title is required">
+                                            </div>
+
+                                            <div class="mb-2">
+                                                <label for="p_slug" class="form-label">Post Slug Name<span
+                                                        class="text-danger">*</span></label>
+                                                <input type="text" class="form-control form-control-sm" id="p_slug"
+                                                    name="p_slug" required
+                                                    data-parsley-pattern="^(?!^[0-9]+$)(?!^[^a-z0-9]+$)[a-z0-9]+(?:-[a-z0-9]+)*$"
+                                                    data-parsley-pattern-message="Post slug should be in lowercase letters and contain dashes between words. Avoid using spaces, uppercase letters, numbers, or special characters.">
+
+
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="d-flex justify-content-between">
+                                                    <label for="publish_date" class="form-label">Publish
+                                                        Date<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox" role="switch" id="auto_publish">
+                                                        <label class="form-check-label" for="auto_publish">Auto Publish</label>
+                                                    </div>
+                                                </div>
+                                                <input class="form-control form-control-sm" id="publish_date"
+                                                    type="datetime-local" placeholder="Select Publish Date" required>
+                                            </div>
+
+                                            <div class="row mb-2">
+                                                <div class="col-md-6 ">
+                                                    <label for="category" class="form-label">Category</label>
+                                                    <select class="form-select form-select-sm " style="width: 100%"
+                                                        id="category" name="category" aria-label="Small select example">
+                                                        <option value="" selected disabled>Select Category</option>
+                                                        <% catData.forEach(function(cat){ %>
+                                                            <option value="<%= cat.cat_id %>">
+                                                                <%= cat.cat_name %>
+                                                            </option>
+                                                            <% }) %>
+                                                    </select>
+
+                                                </div>
+                                                <div class="col-md-6 ">
+                                                    <label for="subCategory" class="form-label">Sub-Category</label>
+                                                    <select class="form-select form-select-sm " id="subCategory"
+                                                        name="subCategory" aria-label="Small select example">
+                                                        <option value="" selected disabled>Select Sub-Category</option>
+                                                        <% subCatData.forEach(function(subCat){ %>
+                                                            <option value="<%= subCat.subcat_id %>">
+                                                                <%= subCat.subcat_name %>
+                                                            </option>
+                                                            <% }) %>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-2">
+                                                <label for="author" class="form-label">Author</label>
+                                                <select class="form-select form-select-sm " id="author" name="author"
+                                                    aria-label="Small select example">
+                                                    <option selected value="" disabled>Select Author</option>
+                                                    <% authorData.forEach(function(author){ %>
+                                                        <option value="<%= author.author_id%>">
+                                                            <%= author.author_display_name%>
+                                                        </option>
+                                                        <%}) %>
+                                                </select>
+                                            </div>
+
+
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="text-center banner_wrapper mb-2">
+                                                <img id="banner_img_preview" class="preview_img"
+                                                    src="../images/blank-image.svg" alt="Image Preview">
+                                            </div>
+                                            <div class="mb-2">
+                                                <div class="d-flex justify-content-between">
+                                                    <label for="banner_img" class="form-label">Banner Image</label>
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox" role="switch" id="banner_show" checked>
+                                                        <label class="form-check-label" for="banner_show">Show</label>
+                                                    </div>
+                                                </div>
+                                               
+                                                <input class="form-control form-control-sm" id="banner_img" type="file" >
+                                            </div>
+
+
+
+                                        </div>
+
+                                        <div class="col-12 mb-2">
+                                            <label for="podcast_link" class="form-label">
+                                                Podcast Link
+                                            </label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                id="podcast_link" name="text">
+                                        </div>
+
+                                        <div class="col-12">
+                                            <div class=" mb-2">
+                                                <label for="p_desc" class="form-label">Post Description</label>
+                                                <textarea id="p_desc"></textarea>
+                                            </div>
+                                        </div>
+
+
+                                        <p id="login-status"></p>
+
+                                    </div>
+
+
+
+
+
+                                </div>
+                                <div class="container app_container mt-3">
+                                    <div class="row ">
+                                        <h4>SEO</h4>
+                                        <div class="col-12 mb-2">
+                                            <label for="meta_title" class="form-label">
+                                                Meta Title<span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text" class="form-control form-control-sm" id="meta_title"
+                                                name="meta_title"
+                                                required data-parsley-required-message="Meta Title is required">
+                                        </div>
+                                        <div class="col-12 mb-2">
+                                            <label for="meta_description" class="form-label">
+                                                Meta Description<span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                id="meta_description" name="text"
+                                                required data-parsley-required-message="Meta Description is required">
+                                        </div>
+                                        <div class="col-md-8 mb-2">
+                                            <label for="meta_keywords" class="form-label">
+                                                Meta Keywords<span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                id="meta_keywords" name="text" 
+                                                required data-parsley-required-message="Meta Keywords is required">
+                                        </div>
+                                        <div class="col-md-4 mb-2">
+                                            <label for="read_time" class="form-label">Reading Time (in Min)</label>
+                                            <input type="text" class="form-control form-control-sm" id="read_time"
+                                                name="text">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="container app_container mt-3">
+                                    <div class="row ">
+                                        <h4>Comment</h4>
+                                        <div class="col-md-4 mb-2">
+                                            <label for="handover_to" class="form-label">Assign To</label>
+                                            <select class="form-select form-select-sm " id="handover_to"
+                                                name="handover_to" aria-label="Small select example">
+                                                <option value="" selected>Select User</option>
+                                                <% handoverData.forEach(function(handover){ if(handover.h_user_id
+                                                    !=user.userid){ %>
+                                                    <option value="<%= handover.h_user_id%>">
+                                                        <%= handover.h_user_name%> - <%= handover.h_role_name%>
+                                                    </option>
+                                                    <% }})%>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-8 mb-3">
+                                            <label for="comments" class="form-label">Add Comment
+                                                <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control form-control-sm" id="comments"
+                                                name="text" required
+                                                data-parsley-required-message="Comment is required">
+                                        </div>
+
+                                        <div class="col-12 mt-3 mb-3 btn_wrapper text-end">
+                                            <button type="submit" class="btn btn-sm btn-primary submitBtn px-4">
+                                                Draft
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+            </div>
+
+            <%- include('contentFooter') %>
+            <script src="/assets/flatpickr/flatpickr.js"></script>
+         <script type="text/javascript"  src="/assets/js/ice/lib/tinymce/js/tinymce/tinymce.js" referrerpolicy="origin"></script>
+                <script>
+                    // tinymce.init({
+                    //   selector: '#mytextarea'
+                    // });
+
+                    tinymce.init({
+                        selector: 'textarea#p_desc',
+                        plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
+                        imagetools_cors_hosts: ['picsum.photos'],
+                        menubar: 'file edit view insert format tools table help',
+                        toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
+                        toolbar_sticky: false,
+                        autosave_ask_before_unload: true,
+                        autosave_interval: "30s",
+                        autosave_prefix: "{path}{query}-{id}-",
+                        autosave_restore_when_empty: false,
+                        autosave_retention: "2m",
+                        image_advtab: true,
+                        setup: function (editor) {
+                            // Attach onKeyUp event listener to the editor
+                            editor.on('KeyUp', function (event) {
+                                var content = editor.getContent();
+
+                                // Check for Chinese characters using a regular expression
+                                var regex = /[\u4E00-\u9FFF\u3400-\u4DBF！，。？【】《》：；“”‘’「」『』—–－％＃＠＆＊＋－＝￥｜～｀〈〉〔〕〖〗〘〙〚〛〝〞〟〰〾〿–—‘’‛“”„‟․‧‰‱‼⁇⁈⁉︰﹐﹒﹔﹕﹖﹗﹙﹚﹛﹜﹝﹞﹟﹠﹡﹢﹣﹤﹥﹦﹨﹩﹪﹫ﹰﹱﹲﹴ﹵ﹶﹷﹸﹹﹺﹻﹼﹽﹾﹿ＿－（）]/;
+                                if (regex.test(content)) {
+                                    alert('Editor contains Chinese characters.');
+                                    // Additional actions when Chinese characters are found
+                                } else {
+                                    console.log('Editor content does not contain Chinese characters.');
+                                    // Additional actions when no Chinese characters are found
+                                }
+                            });
+                        },
+                        /*content_css: '//www.tiny.cloud/css/codepen.min.css',*/
+                        link_list: [
+                            { title: 'My page 1', value: 'https://www.codexworld.com' },
+                            { title: 'My page 2', value: 'https://www.xwebtools.com' }
+                        ],
+                        image_list: [
+                            { title: 'My page 1', value: 'https://www.codexworld.com' },
+                            { title: 'My page 2', value: 'https://www.xwebtools.com' }
+                        ],
+                        image_class_list: [
+                            { title: 'None', value: '' },
+                            { title: 'Some class', value: 'class-name' }
+                        ],
+                        importcss_append: true,
+                        file_picker_callback: function (callback, value, meta) {
+                            /* Provide file and text for the link dialog */
+                            if (meta.filetype === 'file') {
+                                callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
+                            }
+
+                            /* Provide image and alt text for the image dialog */
+                            if (meta.filetype === 'image') {
+                                callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
+                            }
+
+                            /* Provide alternative source and posted for the media dialog */
+                            if (meta.filetype === 'media') {
+                                callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
+                            }
+                        },
+                        image_caption: true,
+                        quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+                        noneditable_noneditable_class: "mceNonEditable",
+                        toolbar_mode: 'sliding',
+                        contextmenu: "link image imagetools table",
+                        height: 500,
+                    });
+                </script>
+                <script>
+                    $(document).ready(function () {
+                        const startTime = getDateTime();
+                        $("#publish_date").flatpickr({
+                            enableTime: true,
+                            dateFormat: "Y-m-d H:i",
+                            
+                        });
+
+                        $('input[name="p_title"]').on('input change', function () {
+                            // Get the value of the input field
+                            var name = $(this).val();
+
+                            // Replace spaces and slashes with hyphens and convert to lowercase
+                            var subName = name.toLowerCase().replace(/[\s/]+/g, '-');
+
+                            // Use setTimeout to introduce a delay for autofill processing
+                            setTimeout(function () {
+                                // Update the value of the slug input field
+                                $('#p_slug').val(subName);
+                              
+                            }, 100);
+                        });
+
+                        $("#banner_img").change(function () {
+                            var input = this;
+                            if (input.files && input.files[0]) {
+                                $('#banner_img_preview').attr('src', URL.createObjectURL(input.files[0]));
+                            }
+                        });
+
+    
+
+
+                        $('#addPost').parsley();
+
+
+
+                        $('#handover_to').on('change', function () {
+                            // Retrieve the selected value
+                            var selectedValue = $(this).val();
+                            if ($(this).val()) {
+                                $(".submitBtn").html('Handover');
+                            } else {
+                                $(".submitBtn").html('Draft');
+                            }
+
+                            // Display the selected value in the console (you can perform any action here)
+                            console.log('Selected value: ' + selectedValue);
+                        });
+
+
+
+                        $('#addPost').submit(async function (e) {
+                            e.preventDefault();
+
+
+                            const timeStamp = new Date().toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+                            const selectedOption = $('#handover_to option:selected');
+                            const comment = $("#comments").val();
+                            console.log(' handover val ' + $("#handover_to").val());
+                            const handoverName = $("#handover_to").val() ? `<b> Handover To - ${selectedOption.text()}</b>` : '';
+
+                            // This event handler is triggered after Parsley.js validation is complete.
+                            console.log('form submit');
+                            // Check if the form is valid
+                            if ($(this).parsley().isValid()) {
+                                console.log('form valid');
+                                const p_title = $("#p_title").val();
+                                const p_slug = $("#p_slug").val();
+                                const publish_date = $("#publish_date").val();
+                                const category = $("#category").val() || 0;
+                                const subCategory = $("#subCategory").val() || 0;
+                                const author = $("#author").val() || 0;
+                                const post_desc = tinymce.get("p_desc").getContent();
+                                const meta_title = $("#meta_title").val();
+                                const meta_description = $("#meta_description").val();
+                                const meta_keywords = $("#meta_keywords").val();
+                                const read_time = $("#read_time").val() || 1;
+                                const session_user = $("#session_user").val();
+                                const handover_to = $("#handover_to").val() ? $("#handover_to").val() : 0;
+                                const comments = `<b>By <%= user.user_name %> ${timeStamp}</b> : ${comment} ${handoverName} <br> `;
+                                const podcast_link = $("#podcast_link").val();
+
+
+                                const formData = new FormData();
+                                formData.append('post_title', p_title);
+                                formData.append('post_name', p_slug);
+                                formData.append('post_date', publish_date);
+                                formData.append('cat_id', category);
+                                formData.append('subcat_id', subCategory);
+                                formData.append('post_author', author);
+                                formData.append('post_content', post_desc);
+                                formData.append('meta_title', meta_title);
+                                formData.append('meta_description', meta_description);
+                                formData.append('meta_keywords', meta_keywords);
+                                formData.append('reading_time', read_time);
+                                formData.append('session_user', session_user);
+                                formData.append('handover_to', handover_to);
+                                formData.append('comments', comments);
+                                formData.append('startTime', startTime);
+                                formData.append('auto_publish', $("#auto_publish").prop("checked") ? 1 : 0);
+                                formData.append('banner_show', $("#banner_show").prop("checked") ? 1 : 0);
+                                formData.append('podcast_link', podcast_link);
+
+                                const imageInput = $('#banner_img')[0]; // Note: [0] to access the native DOM element
+                                // if (imageInput.files.length > 0) {
+                                //     formData.append('banner_img', imageInput.files[0]);
+                                // }
+
+                                formData.append('banner_img', imageInput.files[0]);
+
+                                // const formData = { p_title, p_slug, meta_title, meta_description, meta_keywords, read_time, author, category, subCategory, banner_img };
+                                console.log({ formData });
+                                try {
+                                    const response = await fetch("api/post", {
+                                        method: "POST",
+                                        body: (formData),
+                                    });
+
+
+
+                                    if (response.ok) {
+                                        Swal.fire({
+                                            text: `New Post Created!`,
+                                            icon: "success",
+                                            confirmButtonColor: "#3085d6",
+                                            confirmButtonText: "Ok!"
+                                        }).then((result) => {
+                                            if (result.isConfirmed || result.dismiss === Swal.DismissReason.backdrop || result.dismiss === Swal.DismissReason.esc) {
+                                                window.location.replace('<%=rootVar%>/postall');
+                                            }
+                                        });
+
+
+                                    } else {
+                                        const errorData = await response.json();
+                                        // console.log('the error '+ errorData.message);
+                                        throw new Error(errorData.message);
+                                        // Swal.fire({
+                                        //     text: `Post create error!`,
+                                        //     icon: "error",
+                                        // });
+                                    }
+                                } catch (error) {
+                                    Swal.fire({
+                                        text: error.message,
+                                        icon: "error",
+
+                                        // timer: 2000
+                                    })
+                                }
+                            }
+                        });
+                    })
+                </script>
+
+
+    </body>
+
+    </html>

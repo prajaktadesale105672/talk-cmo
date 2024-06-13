@@ -1,0 +1,40 @@
+<div class="  py-1 px-3 m-0 " >
+    <p class="m-0 content_footer  text-end">
+        <%= new Date().getFullYear()%>© Designed and Developed by KGV
+    </p>
+
+
+</div>
+
+<script src="/assets/js/jquery.min.js"></script>
+<script src="/assets/js/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/allFunctions.js"></script>
+<script src="/assets/datatable/jquery.dataTables.min.js"></script>
+<script src="/assets/datatable/responsive.bootstrap5.min.js"></script>
+<script src="/assets/datatable/dataTables.responsive.min.js"></script>
+<script src="/assets/datatable/dataTables.bootstrap5.min.js"></script>
+<script src="/assets/js/sweetalert2.all.min.js"></script>
+<!-- <script src="/assets/tinymce/tinymce.min.js" referrerpolicy="origin"></script> -->
+<script src="/assets/js/parsley/parsley.min.js"></script>
+<script src="/assets/js/favico.js"></script>
+<!-- <script src="/assets/js/parsley/parsley.min.js"></script> -->
+<!-- Add this to include Parsley.js -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.9.2/parsley.min.js"></script> -->
+
+
+   <%if(pendingCount){%>
+    <script>
+        var favicon = new Favico({
+            position : 'up',
+            bgColor : '#f7d901',
+            textColor : '#000',
+            fontStyle: '800',
+          
+        });
+        favicon.badge("<%= pendingCount %>");
+    </script>
+    <%}%>
+
+
+
+

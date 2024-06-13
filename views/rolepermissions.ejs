@@ -1,0 +1,228 @@
+<%- include('head') %>
+
+  </head>
+
+  <body>
+
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class="content_wrapper">
+              <h4 class="mb-3">User Role Permissions</h4>
+              <form id="userForm">
+                <div class="container app_container">
+                  <% if ( typeof error !== 'undefined') { %>
+                    <h5><%= error %></h5>
+                  <% } else { %>
+                   
+                  
+                  <h5 class="mb-4" id="roleName"></h5>
+                  <div class="table-responsive">
+                    <!--begin::Table-->
+                    <input type="hidden" name="updateRole" id="updateRole" value="<%= updateRole %>">
+
+
+
+                    <table class="table align-middle table-row-dashed fs-6 gy-5">
+
+                      <thead class="table-secondary fs-6">
+                        <th class="">
+                          Module Name
+                        </th>
+                        <th class=" text-center">
+                          Permissions
+                        </th>
+                      </thead>
+
+
+                      <!--begin::Table body-->
+                      <tbody class=" " id="permTable">
+
+                        <% permData.forEach(perm=> {
+                          permShort = (perm.permission_name.split(' ')[0] || '').toLowerCase();
+                          %>
+                          <tr>
+                            <td class="fw-semibold" id="<%= perm.id%>">
+                              <%= perm.permission_name%>
+                            </td>
+                            <td>
+                              <div class="d-flex justify-content-end"> <label
+                                  class="form-check form-check-sm   me-3 me-lg-5">
+                                  <input class="form-check-input" type="checkbox" value="1" id="<%= permShort%>-create"
+                                    name="<%= permShort%>-create"> <span class="form-check-label">Create</span> </label>
+                                <label class="form-check form-check-sm   me-3 me-lg-5">
+                                  <input class="form-check-input" type="checkbox" value="1" id="<%= permShort%>-read"
+                                    name="<%= permShort%>-read"> <span class="form-check-label">Read</span> </label>
+                                <label class="form-check form-check-sm   me-3 me-lg-5">
+                                  <input class="form-check-input" type="checkbox" value="1" id="<%= permShort%>-update"
+                                    name="<%= permShort%>-update"> <span class="form-check-label">Update</span> </label>
+                                <label class="form-check form-check-sm  me-3 me-lg-5"> <input class="form-check-input"
+                                    type="checkbox" value="1" id="<%= permShort%>-delete" name="<%= permShort%>-delete">
+                                  <span class="form-check-label">Delete</span> </label>
+                                
+                              </div>
+                            </td>
+                          </tr>
+                          <% }); %>
+
+
+                      </tbody>
+                      <!--end::Table body-->
+                    </table>
+                    <!--end::Table-->
+                  </div>
+                  <div class="col-12  text-center mb-2">
+                    <button type="submit" class="btn btn-sm btn-primary mt-2"
+                      style="width: clamp(100px, 40%, 100px);">Update</button>
+                  </div>
+                  <% } %>
+                </div>
+
+
+              </form>
+
+              <div class="container app_container mt-3">
+
+              </div>
+
+            </div>
+          </div>
+      </div>
+      <%- include('contentFooter') %>
+
+      
+      <script>
+        $(document).ready(function () {
+
+          $('#userForm').parsley();
+
+
+          // Set Category and Subcategory in select Box
+          const setPerm = async () => {
+            console.log('inside category function');
+            try {
+              const response = await fetch(`/api/role-permissions/<%= updateRole %>`);
+
+              if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              }
+              const data = await response.json();
+              $('#roleName').html(data['data'][0].role);
+
+              data['data'].forEach(perm => {
+                permShort = (perm.permission_name.split(' ')[0] || '').toLowerCase();
+                $(`#${permShort}-create`).prop('checked', perm.create);
+                $(`#${permShort}-read`).prop('checked', perm.read);
+                $(`#${permShort}-update`).prop('checked', perm.update);
+                $(`#${permShort}-delete`).prop('checked', perm.delete);
+              })
+              console.log(data);
+            } catch (error) {
+              throw new Error(`Fetch error: ${error.message}`);
+            }
+
+
+          }
+
+          setPerm();
+
+          const updatePerm = async (permissions) => {
+            // Convert array to JSON string
+            // let permissionsdata = JSON.stringify(permissions);
+
+            // console.log(permissionsdata);
+
+            // const data = {
+            //   perm_role: permissionsdata
+            // };
+
+            try {
+              const response = await fetch('/api/role-permissions/udpate', {
+                method: 'PUT', headers: {
+                  'Content-Type': 'application/json',
+                  // You may need to include additional headers depending on your server requirements
+                },
+                body: JSON.stringify({ permissions: permissions }),
+              })
+
+              if (response.ok) {
+                setTimeout(() => {
+                  Swal.fire({
+                    text: "Role Permisstions Updated!",
+                    icon: "success",
+                    showCancelButton: false,
+                    confirmButtonText: 'OK',
+                    // timer: 2000
+                  }).then((result) => {
+                    if (result.isConfirmed || result.dismiss === Swal.DismissReason.backdrop || result.dismiss === Swal.DismissReason.esc) {
+                      location.reload();
+                    }
+                  })
+                }, 300);
+                console.log(response);
+                // const responseData = await response.json();
+              }
+              else {
+                throw "Role Permission upadate Error!";
+              }
+            } catch (error) {
+              console.log(error);
+            }
+          }
+
+
+          $('#userForm').submit(async function (e) {
+            e.preventDefault();
+
+            let permissions = [];
+
+            let rows = document.querySelectorAll('#permTable tr');
+            console.log(rows);
+            updateRoleId = '<%= updateRole %>';
+            
+              rows.forEach(row => {
+                let permName = row.querySelector('td:first-child').id;
+                let createPermission = row.querySelector('input[name$="-create"]').checked ? 1 : 0;
+                let readPermission = row.querySelector('input[name$="-read"]').checked ? 1 : 0;
+                let updatePermission = row.querySelector('input[name$="-update"]').checked ? 1 : 0;
+                let deletePermission = row.querySelector('input[name$="-delete"]').checked ? 1 : 0;
+                
+                let permission = {
+                  "role_id": updateRoleId,
+                  "perm_id": permName,
+                  "create": createPermission,
+                  "read": readPermission,
+                  "update": updatePermission,
+                  "delete": deletePermission,
+                
+                };
+                permissions.push(permission);
+
+              })
+
+              // console.log(permissions);
+
+              //  Convert array to JSON string
+              //  let permissionsdata = JSON.stringify(permissions);
+
+
+              //  const data = {
+              //    perm_role: permissionsdata
+              //   };
+
+              //   console.log(data);
+
+
+              updatePerm(permissions);
+            
+          });
+        })
+      </script>
+
+
+  </body>
+
+  </html>

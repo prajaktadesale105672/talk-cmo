@@ -1,0 +1,11 @@
+# Dependency directories
+node_modules/
+
+#build directories
+bin/
+
+ 
+.env
+public/assets/images
+public/uploads
+public/assets/tinymce

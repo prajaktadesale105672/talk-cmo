@@ -1,0 +1,357 @@
+<%- include('head') %>
+  </head>
+
+  <body>
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class=" container content_wrapper">
+              <!-- <h2 class="mb-4">Dashboard Page</h2> -->
+
+
+              <div class="row countWrapper ">
+                <div class="col-md-6 col-lg-3 my-1">
+                  <div class="card app_container1" style="background-color: #7239ea;">
+                    <a href="<%=rootVar%>/postall" class=" text-white ">
+
+                      <h3 id="totalCount" class="counter" data-target="<%=(postCountData[0].total_posts)?postCountData[0].total_posts : 0 %>">
+
+                      </h3>
+                      <p class="m-0 text-gray-100">
+                        Total Posts
+                      </p>
+                    </a>
+
+                  </div>
+
+                </div>
+                <div class="col-md-6 col-lg-3 my-1">
+                  <div class="card app_container1 bg-warning">
+                    <a href="<%=rootVar%>/published-posts/publish" class=" text-white ">
+                      <h3 id="publishCount" class="counter" data-target="<%=(postCountData[0].published_posts)? postCountData[0].published_posts : 0 %>">
+
+                      </h3>
+                      <p class="m-0 text-gray-100">
+                        Published Posts
+                      </p>
+                    </a>
+
+                  </div>
+
+                </div>
+                <div class="col-md-6 col-lg-3 my-1">
+                  <div class="card app_container1 " style="background-color: #181c32;">
+                    <a href="<%=rootVar%>/post-list/unpublish" class=" text-white ">
+                      <h3 id="unPublishCount" class="counter" data-target="<%=(postCountData[0].unpublished_posts) ? postCountData[0].unpublished_posts : 0%>">
+
+                      </h3>
+                      <p class="m-0 text-gray-100">
+                        Unpublished Posts
+                      </p>
+                    </a>
+
+                  </div>
+
+                </div>
+                <div class="col-md-6 col-lg-3 my-1">
+                  <div class="card  app_container1" style="background-color: #F1416C;">
+                    <a href="<%=rootVar%>/post-list/draft" class=" text-white ">
+                      <h3 id="draftCount" class="counter" data-target="<%=(postCountData[0].draft_posts) ? postCountData[0].draft_posts : 0%>">
+
+                      </h3>
+                      <p class="m-0 text-gray-100">
+                        Draft Posts
+                      </p>
+                    </a>
+
+                  </div>
+
+                </div>
+                
+                <!--user assigned post  -->
+               
+              </div>
+
+              <div class="row my-3 countWrapper ">
+                <div class="col-md-6 ">
+                  <a href="<%=rootVar%>/connect_leads">
+
+                    <div class=" p-3 d-flex align-items-baseline border rounded app_container1">
+                      <h5 class=" text-black me-auto mb-0  ">
+                        Leads
+                      </h5>
+                      <h6 class=" text-black ms-auto mb-0 counter" id="leadsCount"
+                        data-target="<%=(postCountData[0].contact_leads) ? postCountData[0].contact_leads : 0%>">
+
+                      </h6>
+                    </div>
+                  </a>
+                </div>
+                <div class="col-md-6 ">
+                  <a href="<%=rootVar%>/subscription_leads">
+
+                    <div class=" p-3 d-flex align-items-baseline border rounded app_container1">
+                      <h5 class=" text-black me-auto mb-0  ">
+                        Newsletter subscriptions
+                      </h5>
+                      <h6 class=" text-black ms-auto mb-0 counter" id="NewsletterCount"
+                        data-target="<%=(postCountData[0].subscribe_leads) ? postCountData[0].subscribe_leads : 0%>">
+
+                      </h6>
+                    </div>
+
+
+
+                  </a>
+                </div>
+
+
+              </div>
+
+
+
+
+
+              
+          
+              
+            
+
+
+
+
+
+
+
+
+
+              <div class="row ">
+                <div class="col-md-7 ">
+                  <div class="app_container1">
+                    <h4 class="mb-3">User Pending Posts</h4>
+                    <table id="userCountTable" class="row-border table table-striped table-responsive wrap"
+                      width="100%">
+                      <thead>
+                        <tr>
+                          <th>Id</th>
+                          <th>User</th>
+                          <!-- <th>Role</th> -->
+                          <th>Assigned</th>
+                          <th>Draft</th>
+                          <th class="text-center">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="userInfo1">
+                        <% userCountData.forEach(userCount=> { %>
+                          <tr class="odd">
+                            <td>
+                              <%= userCount.user_id %>
+                            </td>
+                            <td>
+                             <h6 class="m-0"> <%= userCount.display_name %></h6>
+                             <p class="m-0 "><%= userCount.role %></p> 
+                            </td>
+                            <!-- <td>
+                              <%= userCount.role %>
+                            </td> -->
+                            <td>
+                              <%= userCount.assigned_posts %>
+                            </td>
+                            <td>
+                              <%= userCount.draft_posts %>
+                            </td>
+                            <td>
+
+                              <div class="text-center">
+                                <a href="pending-user-posts/<%= userCount.user_id %>"
+                                  class="updateBtn btn btn-sm btn-primary <%= (userCount.assigned_posts == 0 && userCount.draft_posts == 0 ) ? 'disabled' : '' %>"
+                                  id="<%= userCount.user_id %>">
+                                  View Posts</a>
+                              </div>
+
+                            </td>
+
+
+
+                          </tr>
+                          <% }); %>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="col-md-5 ">
+                  <div class="app_container1">
+                    <h4 class="mb-3">Team Pending Posts</h4>
+                    <table id="teamCountTable" class="row-border table table-striped table-responsive wrap"
+                      width="100%">
+                      <thead>
+                        <tr>
+                          <th>Team Name</th>
+                          <th>Assigned</th>
+                          <th>Draft</th>
+                          <th class="text-center">Action</th>
+                        </tr>
+                      </thead>
+                     
+                      <tbody id="userInfo1">
+                        <% teamCountData.forEach(teamCount=> { %>
+                          <tr class="odd">
+                            <td>
+                              <%= teamCount.team %>
+                            </td>
+                            <td>
+                              <%= teamCount.assigned %>
+                            </td>
+                            <td>
+                              <%= teamCount.draft %>
+                            </td>
+
+                            <td>
+
+
+                              <div class="text-center">
+                                <!-- <a href="pending-team-posts/<%= teamCount.team.toLowerCase().replace(/\s+/g, '-')%>/<%= teamCount.role_id %>" -->
+                                <a href="pending-team-posts/<%= teamCount.role_id %>"
+                                  class="updateBtn btn btn-sm btn-primary" id="<%= teamCount.role_id %>">
+                                  View Posts
+                                </a>
+                              </div>
+
+
+                            </td>
+
+
+
+                          </tr>
+                          <% }); %>
+                      </tbody>
+                    </table>
+                  </div><br>
+<!--statstic block  -->
+               
+<!-- statstic block  -->
+                </div>
+ 
+
+          
+                
+
+              </div>
+
+              <div class="row mt-3">
+                <h4>My Posts</h4>
+                <div class="col-md-8 col-lg-4  ">
+                  <div class="  app_container1  border-bottom border-danger border-5" >
+                    <a href="<%=rootVar%>/assigned" class="  ">
+                      <h3 id="assignedCount" class="counter" data-target="<%=(sessionUserPost.assigned_count) ? sessionUserPost.assigned_count : 0%>">
+
+                      </h3>
+                      <p class="m-0 text-gray-100">
+                        Assigned Posts
+                      </p>
+                    </a>
+
+                  </div>
+
+                </div>
+                 <!--user  Saved post  -->
+                 <div class="col-md-8 col-lg-4 ">
+                  <div class="  app_container1  border-bottom border-danger border-5" >
+                    <a href="<%=rootVar%>/draft" class="  ">
+                      <h3 id="savedCount" class="counter" data-target="<%=(sessionUserPost.draft_count) ? sessionUserPost.draft_count : 0%>">
+
+                      </h3>
+                      <p class="m-0 text-gray-100">
+                        Saved Posts
+                      </p>
+                    </a>
+
+                  </div>
+
+                </div>
+                <!--user handover post  -->
+                <div class="col-md-8 col-lg-4 ">
+                  <div class="  app_container1  border-bottom border-danger border-5" >
+                    <a href="<%=rootVar%>/handover" class="  ">
+                      <h3 id="handoverCount" class="counter" data-target="<%=(sessionUserPost.handover_count) ? sessionUserPost.handover_count : 0%>">
+
+                      </h3>
+                      <p class="m-0 text-gray-100">
+                        Handovered Posts
+                      </p>
+                    </a>
+
+                  </div>
+
+                </div>
+               
+              </div>
+
+
+<!-- statstics -->
+
+<!-- statstics -->
+
+            </div>
+          </div>
+      </div>
+
+
+      
+
+      <%- include('contentFooter') %>
+
+        <script>
+
+          $(document).ready(function () {
+
+            $('#userCountTable').DataTable({
+
+              'responsive': {
+                details: true
+              },
+            });
+
+            $('#teamCountTable').DataTable({
+              searching: false,
+              paging: false,
+              info: false,
+              lengthChange: false,
+              'responsive': {
+                details: true
+              },
+
+            });
+
+
+            const counters = document.querySelectorAll(".counter");
+
+            counters.forEach((counter) => {
+              counter.innerText = "0";
+              const updateCounter = () => {
+                const target = +counter.getAttribute("data-target");
+                const count = +counter.innerText;
+                const increment = target / 200;
+                if (count < target) {
+                  counter.innerText = `${Math.ceil(count + increment)}`;
+                  setTimeout(updateCounter, 1);
+                } else counter.innerText = target;
+              };
+              updateCounter();
+            });
+
+
+
+            // getCount();
+
+
+
+          })
+        </script>
+  </body>
+
+  </html>

@@ -1,0 +1,144 @@
+<%- include('head') %>
+
+  </head>
+
+  <body>
+
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class="content_wrapper">
+              <div class="container">
+
+
+              </div>
+              <div class="container app_container">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <h4 class="mb-4">Post List</h4>
+                  </div>
+
+                </div>
+
+                <table id="postTable" class="row-border table table-striped table-responsive wrap" width="100%">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Post Title</th>
+                      <th>Status</th>
+
+                      <th class="none">Comments</th>
+                      <th>User Name</th>
+
+                      <th>Publish Date</th>
+                      <!-- <th>Created At</th>
+                      <th>Updated At</th> -->
+
+                      <th class="text-center">Start Date</th>
+
+                    </tr>
+                  </thead>
+                  <tbody id="userInfo1">
+                    <% countData.forEach(cData=> { %>
+                      <tr class="odd">
+                        <td>
+                          <%= cData.id %>
+                        </td>
+                        <td>
+                          <% if ((cData.cat_slug=="" || cData.cat_slug==null) || (cData.post_name=="" ||
+                            cData.post_name==null)) {%>
+
+                            <%=cData.post_title%>
+                              <%} else { if (cData.post_status=='publish' ) { %>
+
+                                <a class="prev-link" target="_blank"
+                                  href="<%=etVar%>/<%=cData.cat_slug%>/<%=cData.post_name%>">' +cData.post_title%></a>
+                                <%} else {%>
+                                  <a class="prev-link" target="_blank"
+                                    href="<%=etVar%>/preview/<%=cData.cat_slug%>/<%=cData.post_name%>">
+                                    <%=cData.post_title%>
+                                  </a>
+                                  <%} } %>
+                        </td>
+                        <td>
+                          <%= cData.post_status %>
+
+                        </td>
+                        <td>
+                          <%- cData.comments.split("<br>").at(-2) %>
+                        </td>
+                        <td>
+                          <%= (cData.handover_to !=0) ? cData.handover_to_name : cData.session_user_name %>
+                        </td>
+
+
+                        <td>
+                          <%= (cData.post_date==null || cData.post_date=='Invalid Date' ) ? "-" : new
+                            Date(cData.post_date).toLocaleDateString('en-US', {day: 'numeric' ,month: 'short' ,
+                            year: 'numeric' }) %>
+
+                        </td>
+                        <td>
+                          <%= new Date(cData.start_time).toLocaleDateString('en-US', {day: 'numeric' ,month: 'short' ,
+                            year: 'numeric' }) %>
+                        </td>
+
+                        <%})%>
+                      </tr>
+
+                  </tbody>
+
+                </table>
+              </div>
+
+            </div>
+
+          </div>
+
+
+
+      </div>
+
+
+      <%- include('contentFooter') %>
+
+
+        <script>
+
+          $(document).ready(function () {
+
+            $('#postTable').DataTable({
+              "order": [],
+              'columnDefs': [
+                { width: 70, targets: 0 },
+                { width: 500, targets: 1 },
+                // { width: 100, targets: 6 },
+                { width: 500, targets: 1 },
+
+                { responsivePriority: 2, targets: -1 },
+                { responsivePriority: 3, targets: -2 },
+              ],
+              'responsive': {
+                details: true
+              },
+            });
+
+
+
+
+
+
+
+
+
+          })
+        </script>
+
+
+
+  </body>
+
+  </html>

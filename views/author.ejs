@@ -1,0 +1,241 @@
+<%- include('head') %>
+  </head>
+
+  <body>
+
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class="content_wrapper">
+              <div class="container">
+                <!-- <h3 class="">Author</h3> -->
+
+              </div>
+              <div class="container app_container">
+
+                <h4 class="mb-4">Add Author</h4>
+                <form id="authorForm">
+                  <div class="row">
+                    <div class="col-md-8">
+                      <input type="hidden" id="session_user" name="session_user" value="<%= user.userid %>">
+                      <div class="col-12 mb-2">
+                        <label for="name" class="form-label">Author Name<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-sm" id="name" name="name" required
+                          data-parsley-pattern="^(?![\d,]+$)[A-Za-z\d'.,@-][A-Za-z\d'.,@\s-]*[A-Za-z\d'.,@-]$"
+                          data-parsley-required-message="Author Name is required" value="">
+                      </div>
+                      <div class="col-12 mb-2">
+                        <label for="dname" class="form-label">Display Name<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-sm" id="dname" name="dname" required
+                          data-parsley-pattern="^(?![\d,]+$)[A-Za-z\d'.,@-][A-Za-z\d'.,@\s-]*[A-Za-z\d'.,@-]$"
+                          data-parsley-required-message="Display Name is required"
+                          value="">
+                      </div>
+                      <div class="col-12 mb-2">
+                        <label for="designation" class="form-label">Designation<span
+                            class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-sm" id="designation" name="designation" 
+                        data-parsley-required-message="Designation is required" required
+                        value="">
+                      </div>
+                      <!-- desingation parsley required data-parsley-pattern="^[a-zA-Z0-9][a-zA-Z0-9\s]*[a-zA-Z0-9](?<![0-9])$" -->
+                      <div class="col-12 mb-2">
+                        <label for="description" class="form-label">Description<span
+                            class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-sm" id="description" name="description"
+                          required 
+                          data-parsley-required-message="Description is required"
+                          value="">
+                      </div>
+                      <div class="col-12 mb-2" style="margin-top: 20px;">
+                        <label for="profile_img" class="form-label">Profile Image </label>
+                        <input class="form-control form-control-sm" id="profile_img" type="file" >
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="text-center profile_wrapper mb-2">
+                        <img id="profile_img_preview" class="preview_img"
+                          src="<%= etVar+'/uploads/author-profiles/Author-Image.jpg' %>"
+                          alt="Image Preview">
+                      </div>
+                    </div>
+
+                  </div>
+                  <!-- <div class="row"> -->
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-sm btn-primary mt-2">Add Author</button>
+                    <!-- </div> -->
+                  </div>
+                </form>
+                <!-- <span id="login-status"></span> -->
+
+              </div>
+        
+               
+              <div class="container app_container mt-4">
+                <h4 class="mb-4">Author List</h4>
+                <table id="authorTable" class=" row-border table table-striped table-responsive wrap" width="100%">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Author Name</th>
+                      <th>Display Name</th>
+                      <th>Designation</th>
+                      <th>Description </th>
+                      <th>Status</th>
+                      <th class="text-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="userInfo">
+                    <% if (typeof authorData !== 'undefined' && authorData !== null) { %>
+                    
+                    <% authorData.forEach(function(author){ %>
+                      <tr>
+                        <td>
+                          <%= author.author_id%>
+                        </td>
+                        <td>
+                          <%= author.author_name%>
+                        </td>
+                        <td>
+                          <%= author.author_display_name%>
+                        </td>
+                        <td>
+                          <%= author.author_designation%>
+                        </td>
+                        <td>
+                          <%= author.author_description.split(/\s+/).slice(0, 10).join(" ") %>
+                        </td>
+                        <td><span class="fw-bold text-<%= author.status ? 'success' : 'danger' %>">
+                            <%= author.status ? 'Active' : 'Inactive' %>
+                          </span></td>
+                        <td>
+                          <div class="text-center">
+
+                            <a href="<%=rootVar%>/editAuthor/<%= author.author_id %>" class="updateBtn me-4"
+                              id="<%= author.author_id %>">
+                              <i class="bi bi-pencil-square"></i>
+                            </a>
+
+                          </div>
+                        </td>
+                      </tr>
+                      <%})} else{%>
+                        <tr><p>  No author </p></tr>
+                        <%}%>
+                     
+                  </tbody>
+                </table>
+              </div>
+              
+            </div>
+          </div>
+      </div>
+
+
+
+      <%- include('contentFooter') %>
+
+
+        <script>
+          $(document).ready(function () {
+            console.log('jquery');
+            $('#authorForm').parsley();
+
+
+            $("#profile_img").change(function () {
+
+              var input = this;
+              if (input.files && input.files[0]) {
+
+                $('#profile_img_preview').attr('src', URL.createObjectURL(input.files[0]));
+              }
+            });
+
+              $('#authorTable').DataTable({
+              'columnDefs': [
+                { width: 30, targets: 0 },
+
+                // { width: 100, targets: 6 },
+                { responsivePriority: 2, targets: -1 },
+                { responsivePriority: 3, targets: -2 },
+              ],
+            });
+
+           
+
+
+            $('#authorForm').submit(async function (e) {
+              e.preventDefault();
+
+              console.log('form submit');
+              // Check if the form is valid
+              if ($(this).parsley().isValid()) {
+                console.log('chceing valid');
+                const name = $("#name").val();
+                const dname = $("#dname").val();
+                const designation = $("#designation").val();
+                const description = $("#description").val();
+                const profile = $('#profile_img')[0];
+                const formData = new FormData();
+                formData.append('author_name', name);
+                formData.append('author_display_name', dname);
+                formData.append('author_designation', designation);
+                formData.append('author_description', description);
+                // formData.append('profile_img', profile.files[0]);
+                const imageInput = $('#profile_img')[0];
+                if (imageInput.files[0]) {
+                  formData.append('profile_img', imageInput.files[0]);
+                }
+                console.log({ formData });
+                try {
+                  const response = await fetch("<%=rootVar%>/api/author/create", {
+                    method: "POST",
+                    body: (formData),
+                  });
+
+                  if (response.ok) {
+                    console.log('success');
+                    Swal.fire({
+                      text: "Author has been created successfully!",
+                      icon: "success",
+                      showCancelButton: false,
+                      confirmButtonText: 'OK',
+                      // timer: 2000
+                    }).then((result) => {
+                      window.location.reload();
+
+                    })
+                    // const responseData = await response.json();
+                    // document.getElementById("login-status").textContent = "Login successful. Welcome, " + responseData.autToken;
+                  } else {
+                    const responseData = await response.json();
+                    console.log({responseData});
+                    throw new Error(responseData.error);
+                    // throw new error(`Error while creating author!`);
+
+
+
+                  }
+                } catch (error) {
+                  console.log({error});
+                  Swal.fire({
+                      text: error.message,
+                      icon: "error",
+                      // timer: 2000
+                    })
+                
+
+                }
+              }
+            });
+          })
+        </script>
+
+
+  </body>
+
+  </html>

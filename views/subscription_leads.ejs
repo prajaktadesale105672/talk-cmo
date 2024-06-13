@@ -1,0 +1,220 @@
+<%- include('head') %>
+  <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css"> -->
+
+  <!-- <link rel="stylesheet" href="/assets/datatable/jquery.dataTables.min.css"> -->
+  <link rel="stylesheet" href="/assets/datatable/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="/assets/datatable/buttons.dataTables.min.css">
+  <!-- <link rel="stylesheet" href="assets/datatable/responsive.dataTables.min.css"> -->
+  <link rel="stylesheet" href="/assets/datatable/responsive.bootstrap5.min.css">
+
+
+  <style>
+    div.dt-top-container {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    div.dt-center-in-div {
+      margin: 0 auto;
+    }
+
+    div.dt-filter-spacer {
+      margin: 10px 0;
+    }
+  </style>
+
+  <body>
+
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class="content_wrapper">
+
+              <div class="container app_container">
+                <h4 class="">Subscription Leads</h4>
+                <div class=" mt-3">
+                  <!-- <table border="0" cellspacing="5" cellpadding="5">
+                    <tbody><tr>
+                        <td>From date:</td>
+                        <td><input type="text" id="min" name="min"></td>
+                    </tr>
+                    <tr>
+                        <td>To date:</td>
+                        <td><input type="text" id="max" name="max"></td>
+                    </tr> -->
+                </tbody></table>
+                  <table id="newsletter" class="postTable table table-striped display table-responsive " width="100%">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Optin</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+
+
+      <%- include('contentFooter') %>
+
+
+        <script src="/assets/datatable/dataTables.buttons.min.js"></script>
+        <script src="/assets/datatable/jszip.min.js"></script>
+        <script src="/assets/datatable/vfs_fonts.js"></script>
+        <script src="/assets/datatable/buttons.html5.min.js"></script>
+        <script src="/assets/datatable/buttons.print.min.js"></script>
+       <!-- <script src=" https://code.jquery.com/jquery-3.7.0.js"></script>
+       <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+       <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+       <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+       <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+        -->
+
+        <!-- <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+        <script src="//cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script> -->
+        <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script> -->
+        <!-- <script src="//cdn.datatables.net/datetime/1.5.1/js/dataTables.dateTime.min.js"></script> -->
+        <script>
+          $(document).ready(function () {
+
+
+
+            function loadData() {
+
+              // console.log('data loading', dataTable);
+           
+              var dataTable = $('#newsletter').DataTable({
+                // 'processing': true,
+                'serverSide': true,
+                'serverMethod': 'get',
+                "autoWidth": false,
+                "ordering": false,
+                "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+                'pageLength': 10,
+                dom: '<"dt-top-container"<l><"dt-center-in-div"B><f>rtip>',
+                buttons: [
+                'copy', 'csv', 'excel'
+                ],
+                // responsive: {
+                //   details: {
+                //     display: DataTable.Responsive.display.modal({
+                //       header: function (row) {
+                //         var data = row.data();
+                //         console.log({data});
+                //         console.log(data.id);
+                //         return 'Details for ' + data.id + ' ' + data[1];
+                //       }
+                //     }),
+                //     renderer: DataTable.Responsive.renderer.tableAll({
+                //       tableClass: 'modal_table'
+                //     })
+                //   }
+                // },
+                'responsive': {
+                  details: true
+                },
+                'ajax': {
+                  'url': '/api/subscribe/get',
+                  'type': 'get',
+                },
+                'columnDefs': [
+                  { width: 70, targets: 0 },
+                  // { width: 100, targets: 6 },
+                  { responsivePriority: 2, targets: -1 },
+                  { responsivePriority: 3, targets: -2 },
+                  { width: 100, targets: -1 }
+                ],
+                'aaSorting': [],
+                'columns': [
+
+                  { data: 'id' },
+                  { data: 'email' },
+                  { data: 'optin' },
+                  // { data: 'status' },
+                  {
+                    data: null,
+                    render: function (data) {
+                      return (data.status) ? '<span class="text-success fw-medium">Subscribed</span>' : '<span class="text-danger fw-medium">Unsubscribed</span>';
+                    }
+                  },
+                  { data: 'created_at' }
+                  // {
+                  //   data: null,
+                  //   render: function (data) {
+                  //     return new Date(data.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                  //   }
+                  // },
+
+                  // {
+                  //   data: null,
+                  //   render: function (data) {
+                  //     return '<div class="text-center"> <a href="postedit/' + data.id + '" class="updateBtn me-2" id="' + data.id + '"><i class="bi bi-pencil-square"></i></a></div>';
+                  //   }
+                  // },
+
+                ]
+              });
+
+            }
+            
+            loadData()
+
+          });
+
+  let minDate, maxDate;
+
+  // Custom filtering function which will search data in column four between two values
+  DataTable.ext.search.push(function (settings, data, dataIndex) {
+    let min = minDate.val();
+    let max = maxDate.val();
+    let date = new Date(data[4]);
+
+    if (
+      (min === null && max === null) ||
+      (min === null && date <= max) ||
+      (min <= date && max === null) ||
+      (min <= date && date <= max)
+    ) {
+      return true;
+    }
+    return false;
+  });
+
+  // Create date inputs
+  minDate = new DateTime('#min', {
+    format: 'MMMM Do YYYY'
+  });
+  maxDate = new DateTime('#max', {
+    format: 'MMMM Do YYYY'
+  });
+
+  // DataTables initialisation
+  let table = new DataTable('#example');
+
+  // Refilter the table
+  document.querySelectorAll('#min, #max').forEach((el) => {
+    el.addEventListener('change', () => table.draw());
+  });
+        </script>
+
+
+
+  </body>
+
+  </html>

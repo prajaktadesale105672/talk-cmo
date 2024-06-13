@@ -1,0 +1,157 @@
+<%- include('head') %>
+
+  </head>
+
+  <body>
+
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class="content_wrapper">
+
+              <div class="container">
+                <!-- <h3 class="">Posts</h3> -->
+
+              </div>
+              <div class="container app_container">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <h4 class="mb-4">Draft Posts</h4>
+                  </div>
+                 
+                    <div class="col-sm-6 text-sm-end">
+                      <a class="btn btn-sm btn-warning" href="<%=rootVar%>/assigned"> 
+                        <i class="bi bi-file-earmark-arrow-down"></i> Assigned Posts</a>
+                        <a class="btn btn-sm btn-success" href="<%=rootVar%>/handover"> 
+                          <i class="bi bi-file-earmark-arrow-up"></i> Handover Posts</a>
+                    </div>
+                 
+                </div>
+
+
+                <table id="posttable" class="row-border table table-striped table-responsive wrap" width="100%">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Post Title</th>
+                      <th>Publish Date</th>
+                      <th>Category</th>
+                      <th class="none">Sub-Category</th>
+                      <th class="none">Comment</th>
+                      <% if (permissions.find(perm=> perm.permission_name === "Post Management" && (perm.update == 1 ||perm.delete == 1))) { %>
+                        <th class="text-center">Action</th>
+                      <%}%>
+                    </tr>
+                  </thead>
+                  <tbody id="userInfo1">
+                    <% userPosts.forEach(posts=> { %>
+                      <tr class="odd">
+                        <td>
+                          <%= posts.id %>
+                        </td>
+                        <td>
+                          <% if ((posts.cat_slug=="" || posts.cat_slug==null) || (posts.post_name=="" || posts.post_name==null)) {%>
+
+                            <%=posts.post_title%>
+                             <%} else { if (posts.post_status=='publish' ) { %>
+
+                                 <a class="prev-link" target="_blank" href="<%=etVar%>/<%=posts.cat_slug%>/<%=posts.post_name%>">' +posts.post_title%></a>
+                               <%} else {%>
+                                 <a class="prev-link" target="_blank"
+                                   href="<%=etVar%>/preview/<%=posts.cat_slug%>/<%=posts.post_name%>"><%=posts.post_title%></a>
+                             <%} 
+                           } %>
+
+                        </td>
+                        <td>
+                          <%=  (posts.post_date == null || posts.post_date == 'Invalid Date') ? "-" : new Date(posts.post_date).toLocaleDateString('en-GB', { day: 'numeric' , month: 'short' ,
+                          year: 'numeric' }) %>
+                        </td>
+                        <td>
+                          <%= posts.cat_name %>
+                        </td>
+                        <td>
+                          <%= posts.subcat_name %>
+                        </td>
+
+                        <td >
+                          <%- posts.comments.split("<br>").at(-2) %>
+                        </td>
+                      
+                        <% if (permissions.find(perm=> perm.permission_name === "Post Management" && (perm.update == 1 || perm.delete == 1))) { %>
+                          <td class="text-center">
+                            <% if (permissions.find(perm=> perm.permission_name === "Post Management" && (perm.update == 1 ))) { %>
+                              <a href="postedit/<%= posts.id %>" class="updateBtn me-2" id="<%= posts.id %>">
+                                <i class="bi bi-pencil-square"></i>
+                              </a>
+                            <%}%>
+                            <% if (permissions.find(perm=> perm.permission_name === "Post Management" && ( perm.delete == 1))) { %>
+                              <a class="deleteBtn" href="postdelete/<%= posts.id %>" id="<%= posts.id %>">
+                                <i class="bi bi-trash3-fill"></i>
+                              </a>
+                            <%}%>
+                          </td>
+                        <%}%>
+                      </tr>
+                      <% }); %>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+          
+          </div>
+
+
+
+      </div>
+
+      <%- include('contentFooter') %>
+
+      <script>
+
+        $(document).ready(function () {
+
+          $('#posttable').DataTable({
+            "order": [],
+            'columnDefs': [
+            { width: 80, targets: 0 },
+            { width: 400, targets: 1 },
+
+
+              // { width: 100, targets: 6 },
+              { responsivePriority: 2, width: 90, targets: -1 },
+              { responsivePriority: 3, targets: -2 },
+
+            ],
+            'responsive': {
+              details: true
+            },
+          });
+
+
+
+         
+
+
+          
+         
+
+        
+
+        
+
+
+
+
+
+        })
+      </script>
+
+
+  </body>
+
+  </html>

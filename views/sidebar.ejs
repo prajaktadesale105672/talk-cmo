@@ -1,0 +1,282 @@
+<nav id="sidebar" class="sticky-top ">
+    <div class="sidebar-wrapper pt-3">
+
+
+        <ul class="nav flex-column" id="nav_accordion">
+            <li class="nav-item">
+                <a class="nav-link menu-link <% if (page === 'dashboard') { %> active<% } %>" href="<%=rootVar%>/dashboard">
+                    <i class="bi bi-stack"></i>
+                    Dashboard
+                </a>
+            </li>
+            
+            <% if (permissions.find(perm => perm.permission_name === "User Management" && perm.read == 1)) { %>
+            <li class="nav-item">
+                <a class="nav-link " data-bs-toggle="collapse" data-bs-target="#user_menu" href="#">
+                    <i class="bi bi-people"></i>
+                    User Management <i class="bi small bi-caret-down-fill"></i> </a>
+                <ul id="user_menu"
+                    class="submenu collapse <% if (page === 'useradd' ) { %>show<% } %>"
+                    data-bs-parent="#nav_accordion">
+                    <% if (permissions.find(perm => perm.permission_name === "User Management" && perm.read == 1)) { %>      
+                    <li>
+                        <a class="nav-link menu-link <% if (page === 'useradd') { %> active<% } %>"
+                            href="<%=rootVar%>/useradd">
+                            <i class="bi bi-person"></i> Users
+                        </a> 
+                    </li>
+                    <%}%>
+                   
+                </ul>
+
+            </li>
+            <% } %>
+            <% if (permissions.find(perm => perm.permission_name === "Post Management" && perm.read == 1)) { %>
+              
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#post_menu" href="#">
+                    <i class="bi bi-card-heading"></i>
+                    Post Management <i class="bi small bi-caret-down-fill"></i> </a>
+                <ul id="post_menu"
+                    class="submenu collapse <% if (page === 'postcreate' || page === 'postall' || page === 'assigned' || page === 'handover' || page === 'draft'  || page === 'team-posts' || page === 'seo-team-posts' || page === 'post-images' || page === 'url-redirect' ) { %>show<% } %>"
+                    data-bs-parent="#nav_accordion">
+                    <% if (permissions.find(perm => perm.permission_name === "Post Management" && perm.read == 1)) { %>
+                        <li>
+                            <a class="nav-link menu-link <% if (page === 'post-images') { %> active<% } %>"
+                                href="<%=rootVar%>/post-images">
+                                <i class="bi bi-file-image"></i> Media Images
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link menu-link <% if (page === 'url-redirect') { %> active<% } %>"
+                                href="<%=rootVar%>/url-redirect">
+                                <i class="bi bi-sign-turn-right"></i> URL Redirect
+                            </a>
+                        </li>
+                        <%}%>
+                    <% if (permissions.find(perm => perm.permission_name === "Post Management" && perm.create == 1)) { %>
+                      
+                    <li>
+                        <a class="nav-link menu-link <% if (page === 'postcreate') { %> active<% } %>"
+                            href="<%=rootVar%>/postcreate">
+                            <i class="bi bi-file-earmark-plus"></i> New Post
+                        </a>
+                    </li>
+                   
+                    <%}%>
+                    <% if (permissions.find(perm => perm.permission_name === "Post Management" && perm.read == 1)) { %>
+                       
+                    <li>
+                        <a class="nav-link menu-link <% if (page === 'draft') { %> active<% } %>" href="<%=rootVar%>/draft">
+                            <div class="sideLink">
+                                <div>
+                                    <i class="bi bi-bookmark-check"></i>
+                                    Draft Posts
+                                </div>
+                                <div>
+                                    <% if (userPendingPosts.draft_count > 0) { %>
+                                        <span class="badge bg-danger"><%= userPendingPosts.draft_count %></span>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link menu-link <% if (page === 'assigned') { %> active<% } %>" href="<%=rootVar%>/assigned">
+                            <div class="sideLink">
+                                <div>
+                                    <i class="bi bi-file-earmark-arrow-down"></i>
+                                    Assigned Posts
+                                </div>
+                                <div>
+                                    <% if (userPendingPosts.assigned_count>0 ) { %>
+                                        <span class="badge bg-danger"><%= userPendingPosts.assigned_count %></span>
+                                    <% } %>
+                                  
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link menu-link <% if (page === 'handover') { %> active<% } %>" href="<%=rootVar%>/handover">
+                            <div class="sideLink">
+                                <div>
+                                    <i class="bi bi-file-earmark-arrow-up"></i>
+                                    Handover Posts
+                                </div>
+                                <div>
+                                    <% if (userPendingPosts.handover_count>0 ) { %>
+                                        <span class="badge bg-success"><%= userPendingPosts.handover_count %></span>
+                                    <% } %>
+                                    
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    <% if (['Content Manager','SEO Manager','SMO Manager'].includes(user.role))
+                    { %>
+                   <li>
+                       <a class="nav-link menu-link <% if (page === 'team-posts') { %> active<% } %>" 
+                           href="<%=rootVar%>/team-posts">
+                           <i class="bi bi-files"></i> Team Posts All
+                       </a>
+                   </li>
+                   <%}%>
+                   <% if (['SEO Team','SEO Manager'].includes(user.role))
+                   { %>
+                  <li>
+                    
+                      <a class="nav-link menu-link <% if (page === 'seo-team-posts') { %> active<% } %>" 
+                          href="<%=rootVar%>/seo-team-posts">
+                          <div class="sideLink">
+                            <div>
+                                <i class="bi bi-files"></i> Team Pending Posts
+                            </div>
+                            <div>
+                                <% if (seoTeamCount>0 ) { %>
+                                    <span class="badge bg-danger"><%= seoTeamCount %></span>
+                                <% } %>
+                             
+                            </div>
+                        </div>
+                        
+                          
+                      </a>
+                  </li>
+                  <%}%>
+                    
+                    <li>
+                        <a class="nav-link menu-link <% if (page === 'postall') { %> active<% } %>" 
+                            href="<%=rootVar%>/postall">
+                            <i class="bi bi-files"></i> All Posts
+                        </a>
+                    </li>
+                   
+                    <%}%>
+                    
+                        
+                   
+                </ul>
+            </li>
+            <% } %>
+
+          
+           
+
+
+            <% if (permissions.find(perm => perm.permission_name === "Advertisement Management" && perm.read == 1)) { %>
+              
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#addv_menu" href="#">
+                        <i class="bi bi-badge-ad"></i>
+                        Advertisement <i class="bi small bi-caret-down-fill"></i> </a>
+                    <ul id="addv_menu"
+                        class="submenu collapse <% if (page === 'advertisement-add' || page === 'advertisement-all' ) { %>show<% } %>"
+                        data-bs-parent="#nav_accordion">
+                        <% if (permissions.find(perm => perm.permission_name === "Advertisement Management" && perm.create == 1)) { %>
+                        <li>
+                            <a class="nav-link menu-link <% if (page === 'advertisement-add') { %> active<% } %>"
+                                href="<%=rootVar%>/advertisement-add">
+                                <i class="bi bi-file-earmark-plus"></i> Create Advertisement
+                            </a>
+                        </li>
+                        <%}%>
+                        <% if (permissions.find(perm => perm.permission_name === "Advertisement Management" && perm.read == 1)) { %>
+                       
+                        <li>
+                            <a class="nav-link menu-link <% if (page === 'advertisement-all') { %> active<% } %>" 
+                                href="<%=rootVar%>/advertisement-all">
+                                <i class="bi bi-files"></i> All Advertisement
+                            </a>
+                        </li>
+                      
+                        <%}%>
+                        
+                            
+                       
+                    </ul>
+                </li>
+                <% } %>
+
+                 <% <!-- if (['Admin', 'Content Head', 'Marketing Head'].includes(user.role)) { --> %> 
+                     <% if (permissions.find(perm => perm.permission_name === "Lead Management" && perm.read == 1)) { %>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#menu_item3" href="#">
+                    <i class="bi bi-card-heading"></i>
+                    Leads <i class="bi small bi-caret-down-fill"></i> </a>
+                <ul id="menu_item3"
+                    class="submenu collapse <% if (page === 'connect_leads' || page === 'subscription_leads' ) { %>show<% } %>"
+                    data-bs-parent="#nav_accordion">
+                    <li>
+                        <a class="nav-link menu-link <% if (page === 'connect_leads') { %> active<% } %>"
+                            href="<%=rootVar%>/connect_leads">
+                            Contact leads
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link menu-link <% if (page === 'subscription_leads') { %> active<% } %>" 
+                            href="<%=rootVar%>/subscription_leads">
+                            Subscription Leads
+                        </a>
+                    </li>
+                   
+                </ul>
+            </li>
+            <% } %>
+
+            
+           
+            <%if(permissions.find(perm=>["Category Management","Author Management","Role Management"].includes(perm.permission_name) && perm.read==1)){%>
+              
+                    <li class="nav-item">
+                         
+    
+                        <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#category_menu" href="#">
+                            <i class="bi bi-ui-checks-grid"></i>
+                            Master <i class="bi small bi-caret-down-fill"></i> </a>
+                        <ul id="category_menu"
+                            class="submenu collapse <% if ( page === 'category'|| page === 'subcategory'|| page === 'roleadd'|| page === 'author') { %>show<% } %>"
+                            data-bs-parent="#nav_accordion">
+                          
+                            <% if (permissions.find(perm => perm.permission_name === "Role Management" && perm.read == 1)) { %>
+                               
+                                <li>
+                                    <a class="nav-link menu-link <% if (page === 'roleadd') { %> active<% } %>"
+                                        href="<%=rootVar%>/roleadd">
+                                        <i class="bi bi-person-lock"></i>  Roles
+                                    </a> 
+                                </li>
+                                <%}%>
+                                <% if (permissions.find(perm => perm.permission_name === "Author Management" && perm.read == 1)) { %>      
+                                    <li>
+                                        <a class="nav-link menu-link <% if (page === 'author') { %> active<% } %>"
+                                            href="<%=rootVar%>/author"> 
+                                            <i class="bi bi-person"></i>  Authors
+                                        </a> 
+                                    </li>
+                                    <%}%>
+                            
+    
+                            <li>
+                                <a class="nav-link menu-link <% if (page === 'category') { %> active<% } %>" 
+                                    href="<%=rootVar%>/category">
+                                    <i class="bi bi-inbox"></i>  Category
+                                </a>
+                            </li>
+                            <li>
+                                <a class="nav-link menu-link <% if (page === 'subcategory') { %> active<% } %>" 
+                                    href="<%=rootVar%>/sub-category">
+                                    <i class="bi bi-inboxes"></i>  Sub-Category
+                                </a>
+                            </li>
+                          
+                            
+                        </ul>
+    
+                         
+                    </li>
+                    <% } %>
+            
+        </ul>
+    </div>
+</nav>

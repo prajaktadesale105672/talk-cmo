@@ -1,0 +1,274 @@
+<%- include('head') %>
+
+  </head>
+
+  <body>
+
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class="content_wrapper">
+
+              <div class="container">
+              </div>
+
+              <% if (permissions.find(perm=> perm.permission_name === "Role Management" && perm.create == 1)) { %>
+                <!-- <form id="userForm">
+                  <div class="container app_container">
+                    <h4 class="mb-4">Add New Role</h4>
+
+                    <div class="row ">
+
+
+                      <div class="col-md-6 mb-2">
+                        <label for="role" class="form-label">Role<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-sm" id="role" name="role"
+                          data-parsley-pattern="^(?![0-9\s]*$)[a-zA-Z0-9][a-zA-Z0-9\s]*[a-zA-Z0-9]$" required
+                          data-parsley-required-message="Role is required">
+                      </div>
+                      <div class="col-md-6 mb-2">
+                        <label for="name" class="form-label">Name<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-sm" id="name" name="name"
+                          data-parsley-pattern="^(?![0-9\s]*$)[a-zA-Z0-9][a-zA-Z0-9\s]*[a-zA-Z0-9]$" required
+                          data-parsley-required-message=" Name is required" disabled>
+                      </div>
+
+
+                      <div class="col-12  text-center mb-2">
+                        <button type="submit" class="btn btn-sm btn-primary mt-2"
+                          style="width: clamp(100px, 40%, 100px);">Add Role</button>
+                      </div>
+
+                    </div>
+
+                    <span id="login-status"></span>
+
+                  </div>
+
+
+
+                </form> -->
+                <%}%>
+
+
+                  <div class="container app_container mt-4">
+                    <div class="row">
+                      <div class="col-sm-6">
+                    <h4 class="mb-4">Roles List</h4>
+                    </div>
+                    <div class="col-sm-6 text-sm-end">
+                      <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addCatModal"> Add
+                        Role</button>
+                    </div>
+                    <table id="rolesTable" class="table table-responsive table-striped display " width="100%">
+                      <thead>
+                        <tr>
+                          <th>Role ID</th>
+                          <th>Role</th>
+                          <!-- <th>Role Name</th> -->
+                          <th>Created At</th>
+                          <th>Updated At</th>
+                          <th class="text-center">Total Users</th>
+                          <% if (permissions.find(perm=> perm.permission_name === "Role Management" && perm.update == 1
+                            )) { %>
+                            <th class="text-center">Action</th>
+                            <%}%>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% roles.forEach(role=> { %>
+                          <tr>
+                            <td>
+                              <%= role.id %>
+                            </td>
+                            <td>
+                              <%= role.role %>
+                            </td>
+                            <!-- <td>
+                              <%= role.rolename %>
+                            </td> -->
+                            <td>
+                              <%= new Date(role.created_at).toLocaleDateString('en-GB', { day: 'numeric' ,
+                                month: 'short' , year: 'numeric' }) %>
+                            </td>
+                            <td>
+                              <%= new Date(role.updated_at).toLocaleDateString('en-GB', { day: 'numeric' ,
+                                month: 'short' , year: 'numeric' }) %>
+                            </td>
+                            <td class=" text-center"><span>
+                                <%= role.total_users %>
+                              </span></td>
+                            <% if (permissions.find(perm=> perm.permission_name === "Role Management" && perm.update ==
+                              1 )) { %>
+                              <td>
+                                <div class="text-center">
+                                  <a href="rolepermissions/<%= role.id %>"
+                                    class="updateBtn btn btn-sm btn-outline-primary" id="<%= role.id %>">Permissions</a>
+                                </div>
+                              </td>
+                              <%}%>
+                          </tr>
+                          <% }); %>
+                      </tbody>
+                    </table>
+                  </div>
+
+            </div>
+
+          </div>
+
+      </div>
+</div>
+
+      <!-- modal  -->
+
+      <div class="modal fade" id="addCatModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="addCatModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="addCatModalLabel">Add Role</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addRole">
+              <div class="modal-body">
+
+                <div class="col-12 mb-2">
+                  <label for="role" class="form-label">Role<span class="text-danger">*</span></label>
+                  <input type="text" class="form-control form-control-sm" id="role" name="role"
+                  data-parsley-pattern="^(?![\d,]+$)[A-Za-z\d'.,@-][A-Za-z\d'.,@\s-]*[A-Za-z\d'.,@-]$" required
+                    data-parsley-required-message="Role is required">
+                </div>
+                <div class="col-md-12 mb-2">
+                 
+                  <input type="hidden"  id="name" name="name">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-sm btn-primary">Add</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+
+      <%- include('contentFooter') %>
+
+
+        <script>
+
+          $(document).ready(function () {
+
+            // $('#rolesTable').DataTable();
+            console.log("jquery");
+
+
+            //   $('input[name="role"]').on('input', function () {
+            //   // Get the value of the input field
+            //   var name = $(this).val();
+
+            //   // Replace spaces with hyphens and update the value of the sub_name input field
+            //   var subName = name.toLowerCase().replace(/\s+/g, '-');
+            //   $('#name').val(subName);
+            // });
+            $('input[name="role"]').on('input', function () {
+              // Get the value of the input field
+              var name = $(this).val();
+
+              // Replace spaces and slashes with hyphens and update the value of the sub_name input field
+              var subName = name.toLowerCase().replace(/[\s/]+/g, '-');
+              $('#name').val(subName);
+            });
+
+
+
+            $('#rolesTable').DataTable({
+              'columnDefs': [
+                { width: 30, targets: 0 },
+
+                // { width: 100, targets: 6 },
+                { responsivePriority: 2, targets: -1 },
+                { responsivePriority: 3, targets: -2 },
+              ],
+
+            });
+
+
+
+            $('#addRole').parsley();
+
+            $('#addCatModal').submit(async function (e) {
+              e.preventDefault();
+
+              // var formData = new FormData($('#userForm')[0]);
+              // console.log({formData});
+              // This event handler is triggered after Parsley.js validation is complete.
+              // console.log('check form valid ' + $(this).parsley().isValid());
+              // console.log('form submit');
+              // Check if the form is valid
+
+
+              if ($(this).parsley().isValid()) {
+                console.log('chceing valid');
+                const role = $("#role").val();
+                const rolename = $("#name").val();
+                const data = { rolename, role }
+                console.log('json data' + data);
+
+                try {
+                  const response = await fetch("api/roles/add", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                  });
+                  if (response.ok) {
+                    setTimeout(() => {
+                      $("#addCatModal").modal('hide');
+                      console.log('success');
+                      Swal.fire({
+                        text: "Role has been created successfully!",
+                        icon: "success",
+                        showCancelButton: false,
+                        confirmButtonText: 'OK',
+                        // timer: 2000
+
+                      }).then((result) => {
+                        window.location.reload();
+
+                      })
+                    })
+                    // const responseData = await response.json();
+                    // document.getElementById("login-status").textContent = "Login successful. Welcome, " + responseData.autToken;
+                  } else {
+
+                    Swal.fire({
+                      text: "Role already exists",
+                      icon: "error",
+                      // timer: 2000
+                    })
+
+
+                  }
+                }
+                catch (error) {
+                  console.log('error ', error)
+                  // Handle network errors
+                  document.getElementById("login-status").textContent = "Error: " + error.message;
+                }
+
+              }
+            });
+          })
+        </script>
+
+
+  </body>
+
+  </html>

@@ -1,0 +1,290 @@
+<%- include('head') %>
+
+    </head>
+    <style>
+        .profile_wrapper {
+            /* border: 1px solid #f1f1f4; */
+            min-height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .preview_img {
+            max-height: 200px;
+        }
+    </style>
+
+    <body>
+
+        <%- include('appHeader') %>
+            <div class="wrapper d-flex align-items-stretch">
+                <%- include('sidebar') %>
+
+                    <!-- Page Content  -->
+                    <div id="content" class="">
+                        <div class="content_wrapper">
+                            <div class="container">
+                                <!-- <h3 class="">Author</h3> -->
+
+                            </div>
+
+
+                            <div class="container app_container">
+                                <h4 class="mb-4">Edit Author - <%=authorData.author_display_name%>
+                                </h4>
+                                <form id="authorForm">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <input type="hidden" id="session_user" name="session_user"
+                                                value="<%= user.userid %>">
+                                            <input type="hidden" id="author_id" name="author_id"
+                                                value="<%= authorData.author_id %>">
+                                            <div class="col-12 mb-2">
+                                                <label for="name" class="form-label">Author Name<span
+                                                        class="text-danger">*</label>
+                                                <input type="text" class="form-control form-control-sm" id="name"
+                                                    name="name" required
+                                                    data-parsley-pattern="^(?![\d,]+$)[A-Za-z\d'.,@-][A-Za-z\d'.,@\s-]*[A-Za-z\d'.,@-]$"
+                                                    data-parsley-required-message="Author Name is required"
+                                                    value="<%=authorData.author_name%>">
+                                            </div>
+                                            <div class="col-12 mb-2">
+                                                <label for="dname" class="form-label">Display Name<span
+                                                        class="text-danger">*</label>
+                                                <input type="text" class="form-control form-control-sm" id="dname"
+                                                    name="dname" required
+                                                    data-parsley-pattern="^(?![\d,]+$)[A-Za-z\d'.,@-][A-Za-z\d'.,@\s-]*[A-Za-z\d'.,@-]$"
+                                                    data-parsley-required-message="Display Name is required"
+                                                    value="<%=authorData.author_display_name%>">
+                                            </div>
+                                            <div class="col-12 mb-2">
+                                                <label for="designation" class="form-label">Designation<span
+                                                        class="text-danger">*</label>
+                                                <input type="text" class="form-control form-control-sm" id="designation"
+                                                    name="designation" required
+                                                    data-parsley-required-message="Designation is required"
+                                                    value="<%=authorData.author_designation%>">
+                                            </div>
+                                              <!-- desingation parsley required data-parsley-pattern="^[a-zA-Z0-9][a-zA-Z0-9\s]*[a-zA-Z0-9](?<![0-9])$" -->
+                                            <div class="col-12 mb-2">
+                                                <label for="description" class="form-label">Description<span
+                                                        class="text-danger">*</label>
+                                                <input type="text" class="form-control form-control-sm" id="description"
+                                                    name="description" required
+                                                  
+                                                    data-parsley-required-message="Description is required"
+                                                    value="<%=authorData.author_description%>">
+                                            </div>
+                                            
+                                            <!-- <div class="col-12 mb-2">
+                                                <label for="status" class="form-label">Status</label>
+                                                <input type="text" class="form-control form-control-sm" id="status"
+                                                    name="status" 
+                                                    value="<%=authorData.status%>">
+                                            </div> -->
+                                            <div class="col-12 mb-2">
+                                                <label for="status" class="form-label">Status</label>
+                                                <select class="form-select form-select-sm" id="status" name="status">
+                                                    <option value="active" <%=authorData.status== 1 ? 'selected'
+                                                        : '' %>>Active</option>
+                                                    <option value="inactive" <%=authorData.status== 0
+                                                        ? 'selected' : '' %>>Inactive</option>
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="text-center profile_wrapper mb-2">
+                                                <img id="profile_img_preview" class="preview_img"
+                                                    src="<%= authorData.author_photo ? etVar+ authorData.author_photo : etVar+'/uploads/author-profiles/Author-Image.jpg' %>"
+                                                    alt="Image Preview">
+                                            </div>
+                                            <div class="mb-2" style="margin-top: 20px;">
+                                                <label for="profile_img" class="form-label">Profile Image</label>
+                                                <input class="form-control form-control-sm" id="profile_img"
+                                                    type="file">
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="text-center">
+                                            <button type="submit" class="btn btn-sm btn-primary mt-2">Submit</button>
+                                        </div>
+                                    </div>
+
+
+                                </form>
+
+                            </div>
+
+                            <div class="container app_container mt-4">
+                                <h4 class="mb-4">Author List</h4>
+                                <table id="authorTable" class=" row-border table table-striped table-responsive wrap"
+                                    width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Author Name</th>
+                                            <th>Display Name</th>
+                                            <th>Designation</th>
+                                            <th>Description </th>
+                                            <th>Status</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="userInfo">
+                                        <% authorList.forEach(function(author){ %>
+                                            <tr>
+                                                <td>
+                                                    <%= author.author_id%>
+                                                </td>
+                                                <td>
+                                                    <%= author.author_name%>
+                                                </td>
+                                                <td>
+                                                    <%= author.author_display_name%>
+                                                </td>
+                                                <td>
+                                                    <%= author.author_designation%>
+                                                </td>
+                                                <td>
+                                                    <%= author.author_description%>
+                                                </td>
+                                                <td><span
+                                                        class="badge rounded-pill text-bg-<%= author.status ? 'success' : 'danger' %>">
+                                                        <%= author.status ? 'Active' : 'Inactive' %>
+                                                    </span></td>
+                                                <td>
+                                                    <div class="text-center">
+
+                                                        <a href="<%=rootVar%>/editAuthor/<%= author.author_id %>"
+                                                            class="updateBtn me-2" id="<%= author.author_id %>">
+                                                            <i class="bi bi-pencil-square"></i>
+                                                        </a>
+
+                                                        <!-- <a href="" class="deleteBtn" id="<%= author.author_id %>">
+                                                            <i class="bi bi-trash3-fill"></i>
+                                                        </a> -->
+
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <%})%>
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+            </div>
+
+            <%- include('contentFooter') %>
+
+                <script>
+                    $(document).ready(function () {
+
+                        $('#authorTable').DataTable({
+                            'columnDefs': [
+                                { width: 30, targets: 0 },
+
+                                // { width: 100, targets: 6 },
+                                { responsivePriority: 2, targets: -1 },
+                                { responsivePriority: 3, targets: -2 },
+                            ],
+                        });
+
+
+                        $("#profile_img").change(function () {
+
+                            var input = this;
+                            if (input.files && input.files[0]) {
+
+                                $('#profile_img_preview').attr('src', URL.createObjectURL(input.files[0]));
+                            }
+                        });
+                        $('#authorForm').parsley();
+
+
+                        $('#authorForm').submit(async function (e) {
+                            e.preventDefault();
+                            // This event handler is triggered after Parsley.js validation is complete.
+                            // Check if the form is valid
+                            if ($(this).parsley().isValid()) {
+                                console.log('chceing valid');
+                                const author_id = $("#author_id").val();
+                                const name = $("#name").val();
+                                const dname = $("#dname").val();
+                                const designation = $("#designation").val();
+                                const description = $("#description").val();
+                                const status = $("#status").val();
+                                const profile = $('#profile_img')[0];
+                                // if (imageInput.files.length > 0) {
+                                //     formData.append('banner_img', imageInput.files[0]);
+                                // }
+                                // const data = { name, dname, disignation,description };
+                                const formData = new FormData();
+                                formData.append('author_name', name);
+                                formData.append('author_display_name', dname);
+                                formData.append('author_designation', designation);
+                                formData.append('author_description', description);
+                                const statusValue = (status === 'active') ? '1' : '0';
+                                formData.append('status', statusValue);
+                                const imageInput = $('#profile_img')[0];
+                                if (imageInput.files[0]) {
+                                    formData.append('profile_img', imageInput.files[0]);
+                                }
+
+                                console.log({ formData });
+                                console.log({ status });
+                                try {
+                                    const response = await fetch("<%=rootVar%>/api/author/edit/" + author_id, {
+                                        method: "PUT",
+                                        body: (formData),
+                                    });
+
+                                    if (response.ok) {
+                                        console.log('success');
+                                        Swal.fire({
+                                            text: "Author Details Updated!",
+                                            icon: "success",
+                                            showCancelButton: false,
+                                            confirmButtonText: 'OK',
+                                            // timer: 2000
+                                        }).then((result) => {
+                                            if (result.isConfirmed || result.dismiss === Swal.DismissReason.backdrop || result.dismiss === Swal.DismissReason.esc) {
+                                                // window.location.reload();
+                                                window.location.replace('<%=rootVar%>/author');
+                                            }
+                                        })
+                                        // const responseData = await response.json();
+                                        // document.getElementById("login-status").textContent = "Login successful. Welcome, " + responseData.autToken;
+                                    } else {
+                                        const responseData = await response.json();
+                                            throw new Error(responseData.error);
+                                        
+
+
+                                    }
+                                } catch (error) {
+
+                                    Swal.fire({
+                                            text: error.message,
+                                            icon: "error",
+
+                                            // timer: 2000
+                                        })
+                                }
+                            }
+                        });
+                    })
+                </script>
+
+
+    </body>
+
+    </html>

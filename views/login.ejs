@@ -1,0 +1,215 @@
+<% rootVar='http://localhost:3000' ; etVar='http://localhost' ; %>
+
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ET - Login</title>
+        <!-- Add your CSS links or stylesheets here -->
+        <link rel="icon" href="/uploads\android-icon-192x192.png">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+        <link rel="stylesheet" href="/assets/css/bootstrap/bootstrap.min.css">
+        <link rel="stylesheet" href="/assets/css/style.css">
+
+        <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Poppins:wght@300;400;500;600&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet" href="/assets/datatable/dataTables.bootstrap5.min.css">
+        <link rel="stylesheet" href="/assets/datatable/responsive.bootstrap5.min.css">
+        <style>
+            body {
+                height: 100vh;
+            }
+        </style>
+
+    </head>
+
+    <body>
+
+        <!-- Page Content  -->
+
+        <div class="container">
+            <div class="row justify-content-center">
+
+                <div class="col-md-6 form_wrapper formBox" style="margin-top: 100px;">
+                    <div>
+                        <h2 class=" mb-2" style="text-align: center;">
+                            <img style="width: 30%;" src="/uploads\TC-spacing-blue-2.png" alt="">
+                        </h2>
+                    </div>
+
+
+                    <!-- <h2 class="mb-4" style=" font-weight: 600; text-align: center;">
+                        Login
+                    </h2> -->
+                    <form id="loginform" class="">
+
+
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon3"><i class="bi bi-envelope"></i></span>
+                                <input type="text" class="form-control form-control-sm" id="email" id="email"
+                                    name="email" required data-parsley-required-message="Email is required" value=""
+                                    data-parsley-errors-container="#email-error">
+                            </div>
+                            <div id="email-error"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="pass" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon3"><i
+                                        class="bi bi-shield-lock"></i></span>
+                                <input type="password" class="form-control form-control-sm" id="pass" id="pass"
+                                    name="password" value="" required
+                                    data-parsley-required-message="Password is required"
+                                    data-parsley-errors-container="#pass-error">
+                                <!-- <span class="input_eye"> <i class="bi bi-eye pass-toggle"></i></span> -->
+                                <span class="input-group-text pass-toggle"><i class="bi bi-eye eye-icon"></i></span>
+                            </div>
+                            <div id="pass-error"></div>
+
+                        </div>
+
+                        <p id="login-status"></p>
+                        <div class="text-center">
+                            <button type="submit" class="btn-1 ">Login</button>
+                        </div>
+
+
+                        <!-- <div class="mb-3">
+                                                    <label for="email" class="form-label">Email</label>
+                                                    <div class="input-group">
+                                                      <span class="input-group-text" id="basic-addon3"><i class="bi bi-envelope"></i></span>
+                                                      <input type="text" class="form-control form-control-sm" id="email" id="email" name="email" required
+                                                      data-parsley-required-message="Email is required"
+                                                      value="vaibhavdesale2@example.com" >
+                                                    </div>
+                                                  </div> -->
+
+                        <!-- <div class="mb-3">
+                                                    <label for="pass" class="form-label">Password</label>
+                                                    <div class="input-group">
+                                                      <span class="input-group-text" id="basic-addon3"><i class="bi bi-shield-lock"></i></span>
+                                                      <input type="password" class="form-control form-control-sm" id="pass" id="pass" name="password" value="hashed_password"  required
+                                                      data-parsley-required-message="password is required" >
+                                                       <span class="input_eye"> <i class="bi bi-eye pass-toggle"></i></span> -->
+                        <!-- <span class="input-group-text pass-toggle"><i class="bi bi-eye eye-icon"></i></span> -->
+                        <!-- </div> -->
+
+                        <!-- </div>  -->
+                        <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
+
+                    </form>
+                    <% if (sessionExpired ) { %>
+                        <div class="alert alert-warning alert-dismissible fade show" id="alert-warning" role="alert">
+                            <strong>Session Expired!</strong> Please Login Again.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <script>
+                            // JavaScript code to hide the div after 3 seconds
+                            const conditionalDiv = document.getElementById('alert-warning');
+
+                            // Set a timeout to hide the div after 3 seconds (3000 milliseconds)
+                            setTimeout(() => {
+                                conditionalDiv.style.display = 'none';
+                            }, 3000);
+                        </script>
+                        <% } %>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+
+
+
+
+    </body>
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/js/parsley/parsley.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+
+
+            $('.pass-toggle').click(function () {
+                if ($('#pass').attr('type') === 'password') {
+                    $('#pass').attr("type", "text");
+                    $('.eye-icon').removeClass('bi-eye')
+                    $('.eye-icon').addClass('bi-eye-slash')
+                }
+                else {
+                    $('#pass').attr("type", "password");
+                    $('.eye-icon').removeClass('bi-eye-slash')
+                    $('.eye-icon').addClass('bi-eye')
+                }
+
+            })
+
+
+            $('#loginform').parsley();
+
+            $('#loginform').submit(async function (e) {
+                e.preventDefault();
+                // This event handler is triggered after Parsley.js validation is complete.
+                console.log('form submit');
+                // Check if the form is valid
+                if ($(this).parsley().isValid()) {
+                    console.log('chceing valid');
+                    const email = $("#email").val();
+                    const password = $("#pass").val();
+
+                    const data = { email, password };
+
+                    try {
+                        const response = await fetch("api/users/login", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(data),
+                        });
+
+
+
+                        if (response.ok) {
+                            // console.log(response);
+                            // Successful login
+                            const responseData = response.json();
+                            // console.log('inside login page ', re)
+                            history.pushState(null, null, '<%=rootVar%>/dashboard');
+                            // console.log(history.pushState(null, null, '<%=rootVar%>/dashboard'))
+                            window.location.href = '<%=rootVar%>/dashboard';
+
+                        } else if (response.status === 401) {
+                            // console.log(response);
+                            // Unauthorized (e.g., invalid email or password)
+                            document.getElementById("login-status").textContent = "Login failed: Invalid email or password";
+                        } else {
+                            // Handle other errors (e.g., server error)
+                            const errorMessage = await response.text();
+                            document.getElementById("login-status").textContent = "Login failed: " + errorMessage;
+                        }
+                    } catch (error) {
+                        // console.log(response);
+                        // Handle network errors
+                        document.getElementById("login-status").textContent = "Login failed: " + error.message;
+
+                    }
+                }
+            });
+
+
+        })
+    </script>
+
+    </html>

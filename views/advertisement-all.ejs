@@ -1,0 +1,421 @@
+<%- include('head') %>
+
+  </head>
+
+  <body>
+
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class="content_wrapper">
+              <div class="container app_container">
+                <h4 class="mb-4">Live Ad Banner</h4>
+                <div class="row row-cols-1 row-cols-md-3 g-4 img_card">
+                  <%activeAdv.forEach(activeAdv=> { %>
+                    <div class="col">
+                      <div class="card h-100">
+                        <div class="card-header">
+                          <%= activeAdv.banner_type%>
+                        </div>
+                        <img src="<%=etVar%><%=activeAdv.banner_img%>" class="card_img"
+                          alt="...">
+                        <div class="card-body">
+                          <p class="card-text text-center">
+                            <%= activeAdv.banner_name%>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <% })%>
+                </div>
+              </div>
+
+              <div class="container app_container mt-4">
+                <h4 class="mb-4">Adv Banner List</h4>
+                <table id="bannerTable" class=" row-border table display table-striped table-responsive wrap"
+                  width="100%">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Banner Image</th>
+                      <th class="none">Destination URL</th>
+                      <th>Status</th>
+                      <th class="none">Created At</th>
+                      <th class="none">Updated At</th>
+                      <% if (permissions.find(perm=> perm.permission_name === "User Management" && (perm.update == 1
+                        || perm.delete == 1))) { %>
+                        <th class="text-center">Action</th>
+                        <%}%>
+                    </tr>
+                  </thead>
+                  <tbody id="">
+                    <% advData.forEach(advData=> { %>
+                      <tr>
+                        <td>
+                          <%= advData.banner_id %>
+                        </td>
+                        <td>
+                          <%= advData.banner_name %>
+                        </td>
+                        <td>
+                          <%= advData.banner_type %>
+                        </td>
+                        <td>
+                          <%= advData.banner_img %>
+                        </td>
+                        <td>
+                          <%= advData.dest_url %>
+                        </td>
+                        <td>
+                          <span class="fw-bold text-<%= advData.banner_status ? 'success' : 'danger' %>">
+                            <%= advData.banner_status ? 'Active' : 'Inactive' %>
+                          </span>
+                        </td>
+                        <td>
+                          <%= new Date(advData.created_at).toLocaleDateString('en-GB', { day: 'numeric' , month: 'short'
+                            ,year: 'numeric' }) %>
+                        </td>
+                        <td>
+                          <%= new Date(advData.updated_at).toLocaleDateString('en-GB', { day: 'numeric' , month: 'short'
+                            ,year: 'numeric' }) %>
+                        </td>
+
+
+                        <% if (permissions.find(perm=> perm.permission_name === "User Management" && (perm.update ==
+                          1 || perm.delete == 1))) { %>
+                          <td>
+                            <div class="text-center">
+                              <% if (permissions.find(perm=> perm.permission_name === "User Management" &&
+                                (perm.update == 1 ))) { %>
+                                <!-- <a href="" class="updateUser me-2" id="<%= advData.banner_id %>">
+                                              <i class="bi bi-pencil-square"></i>
+                                            </a> -->
+                                <span class=" me-2">
+                                  <span class="badge rounded-pill text-bg-warning updateBanner"
+                                    id="<%= advData.banner_id %>">Update</span>
+
+                                </span>
+                                <%}%>
+
+                            </div>
+                          </td>
+                          <%}%>
+                      </tr>
+                      <% }); %>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+          </div>
+      </div>
+
+      <%- include('contentFooter') %>
+
+
+        <!-- Modal -->
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="updateBannerModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+          aria-labelledby="updateBannerModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="updateBannerModalLabel">Update Banner <span id="editCatName"></span>
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <form id="udpateBanner">
+                <div class="modal-body">
+
+                  <div class="col-12 mb-2">
+
+
+                    <input type="hidden" id="u_banner_id" name="u_banner_id" value="">
+                    <div class="col-12 mb-2">
+
+                      <div class="text-center updateWrapper mb-2">
+                        <img id="img_preview" class="updateImg" src="" alt="Image Preview">
+                      </div>
+                    </div>
+                    <div class="col-12 mb-2">
+                      <label for="u_img" class="form-label">Banner Image<span class="text-danger">*</span></label>
+                      <input class="form-control form-control-sm" id="u_img" type="file">
+                      <div id="errorMsg"></div>
+                    </div>
+                    <div class="col-12 mb-2">
+                      <label for="u_img_type" class="form-label">Banner Type<span class="text-danger">*</span></label>
+                      <select class="form-select form-select-sm " id="u_img_type" name="u_img_type"
+                        aria-label="Small select example" required
+                        data-parsley-required-message="Banner Image Type is required">
+                        <option selected value="" disabled>Select Type</option>
+                        <option value="Banner-1">Banner-1 (300 * 600)</option>
+                        <option value="Banner-2">Banner-2 (300 * 250)</option>
+                        <option value="Banner-3">Banner-3 (900 * 50)</option>
+
+                      </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                      <label for="u_banner_name" class="form-label">Banner Name<span class="text-danger">*</label>
+                      <input type="text" class="form-control form-control-sm" id="u_banner_name" name="u_banner_name"
+                        value="" required data-parsley-pattern="^(?!\s)(.*\S)?(?<!\s)$"
+                        data-parsley-required-message="Category is required">
+                    </div>
+
+                    <div class="col-12 mb-2">
+                      <label for="u_dest_url" class="form-label">Destination Url<span class="text-danger">*</label>
+                      <input type="text" class="form-control form-control-sm" id="u_dest_url" name="u_dest_url" value=""
+                        required data-parsley-pattern="^(https?):\/\/[^\s/$.?#].[^\s]*\.[^\s\/$?#].[^\s]*$"
+                        data-parsley-required-message="Slug name is required">
+                    </div>
+                    <div class="col-12 mb-2">
+                      <label for="u_banner_status" class="form-label">Status<span class="text-danger">*</span></label>
+                      <select class="form-select form-select-sm " id="u_banner_status" name="u_banner_status"
+                        aria-label="Small select example" required
+                        data-parsley-required-message="Banner Image Type is required">
+                        <option value="0">Inactive</option>
+                        <option value="1">Active</option>
+
+                      </select>
+                    </div>
+
+
+
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-sm btn-warning updateBtn">Update</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+        <script>
+          $(document).ready(function () {
+
+            var _URL = window.URL || window.webkitURL;
+            $('#bannerTable').DataTable({
+              "order": [[5, 'asc']],
+              'columnDefs': [
+                { width: 70, targets: 0 },
+
+                // { width: 100, targets: 6 },
+                { responsivePriority: 2, targets: -1 },
+                { responsivePriority: 3, targets: -2 },
+              ], 'responsive': {
+              details: true
+            },
+            });
+
+            $('#u_img_type').on('change', function() {
+                var selectedValue = $(this).val();
+                if (selectedValue != "") {
+                    $('input').prop('disabled', false);
+                    checkImage();
+                } else {
+                    $('input').prop('disabled', true);
+                }
+            });
+
+            $('#udpateBanner').parsley();
+
+
+            $("#u_img").change(function () {
+
+              checkImage();
+            });
+
+
+            function checkImage() {
+              // var file = this.files[0];
+              var file = $('#u_img')[0].files[0]
+              var errorDiv = $('#errorMsg');
+              var bannerType = $('#u_img_type').val();
+              var previewImg = $('#img_preview');
+              if (file) {
+                console.log(file.type);
+                if (file.type === "image/png" || file.type === "image/jpeg" || file.type === "image/webp") {
+
+
+
+
+                  var reader = new FileReader();
+                  reader.onload = function (e) {
+                    previewImg.attr('src', e.target.result);
+                    var img = new Image();
+                    img.src = e.target.result;
+
+                    img.onload = function () {
+                      var width = this.width;
+                      var height = this.height;
+                      console.log(width, height);
+                      var ratio = width / height;
+                      console.log({ ratio });
+                      // switch (bannerType) {
+                      //   case 'Banner-1':
+                      //     if ((width > 279 && width < 321) && (height > 579 && height < 621)) {
+                      //       errorDiv.text('');
+                      //       $(".updateBtn").prop('disabled', false);
+                      //     } else {
+                      //       errorDiv.text('Invalid resolution Banner 1. Expected: ~ (300 x 600)');
+                      //       $(".updateBtn").prop('disabled', true);
+                      //       $('#u_img').parsley().addError('Invalid resolution Banner 1. Expected: ~ (300 x 600)');
+                      //     }
+                      //     break;
+                      //   case 'Banner-2':
+                      //     if ((width > 279 && width < 321) && (height > 219 && height < 271)) {
+                      //       $(".updateBtn").prop('disabled', false);
+                      //       errorDiv.text('');
+                      //     } else {
+                      //       errorDiv.text('Invalid resolution Banner 2. Expected: ~ 300x250');
+                      //       $(".updateBtn").prop('disabled', true);
+                      //       $('#u_img').parsley().addError('Invalid resolution Banner 2. Expected: ~ 300x250');
+                      //     }
+                      //     break;
+                      //   case 'Banner-3':
+                      //     if ((width > 879 && width < 921) && (height > 29 && height < 61)) {
+                      //       $(".updateBtn").prop('disabled', false);
+                      //       errorDiv.text('');
+                      //     } else {
+                      //       errorDiv.text('Invalid resolution Banner 3. Expected: ~ 900x50');
+                      //       $(".updateBtn").prop('disabled', true);
+                      //       $('#u_img').parsley().addError('Invalid resolution Banner 3. Expected: ~ 900x50');
+                      //     }
+                      //     break;
+                      //   default:
+                      //     errorDiv.text('Invalid banner type');
+                      //     $('#u_img').parsley().addError('Invalid banner type.');
+                      //     $(".updateBtn").prop('disabled', true);
+                      // }
+                    };
+                  }
+                } else {
+                  errorDiv.text('Invalid file type. Please select an image file.');
+                  $(".updateBtn").prop('disabled', true);
+                  previewImg.attr('src', "../images/blank-image.svg");
+                  $('#u_img').parsley().addError('Invalid file type. Please select an image file.');
+                  return;
+                }
+
+                reader.readAsDataURL(file);
+              }
+            }
+
+
+
+
+            $('#bannerTable').on('click', '.updateBanner', async function () {
+              updateId = this.id;
+              try {
+                const response = await fetch(`<%=rootVar%>/api/advertisement/get_banner/${updateId}`).then(response => {
+                  if (!response.ok) {
+                    throw new error(`Banner Data not received`);
+                  }
+                  return response.json();
+                }).then(data => {
+                  console.log(data);
+                  const bannerInfo = data.response[0];
+                  console.log(bannerInfo);
+                  $('#u_banner_id').val(updateId);
+                  $('#u_img_type').val(bannerInfo.banner_type);
+                  $('#u_banner_name').val(bannerInfo.banner_name);
+                  $('#u_dest_url').val(bannerInfo.dest_url);
+                  $('#u_banner_status').val(bannerInfo.banner_status);
+                  $('#img_preview').attr('src', `<%=etVar%>/${bannerInfo.banner_img}`);
+                  $("#updateBannerModal").modal('show');
+
+                })
+              } catch (error) {
+                Swal.fire({
+                  text: error,
+                  icon: "error",
+                });
+                // console.log(error);
+              }
+
+
+            })
+
+
+            $('#udpateBanner').submit(async function (e) {
+              e.preventDefault();
+
+              console.log('form submit');
+              // Check if the form is valid
+              if ($(this).parsley().isValid()) {
+                console.log('chceing valid');
+                const banner_id = $("#u_banner_id").val();
+                const banner_type = $("#u_img_type").val();
+                const banner_status = $("#u_banner_status").val();
+                const banner_name = $("#u_banner_name").val();
+                const dest_url = $("#u_dest_url").val();
+                const banner = $('#u_img')[0];
+
+                const formData = new FormData();
+                formData.append('banner_id', banner_id);
+                formData.append('banner_type', banner_type);
+                formData.append('banner_name', banner_name);
+                formData.append('banner_status', banner_status);
+                formData.append('dest_url', dest_url);
+                if (banner.files[0]) {
+                  formData.append('banner_img', banner.files[0]);
+                }
+                console.log({ formData });
+                try {
+                  const response = await fetch("<%=rootVar%>/api/advertisement/udpate", {
+                    method: "PUT",
+                    body: (formData),
+                  });
+
+                  if (response.ok) {
+                    console.log('success');
+                    Swal.fire({
+                      text: "Advertisement Banner Information has been updated successfully!",
+                      icon: "success",
+                      showCancelButton: false,
+                      confirmButtonText: 'OK',
+                      // timer: 2000
+                    }).then((result) => {
+                      window.location.reload();
+
+                    })
+                    // const responseData = await response.json();
+                    // document.getElementById("login-status").textContent = "Login successful. Welcome, " + responseData.autToken;
+                  } else {
+                    const responseData = await response.json();
+                    throw new Error(responseData.message);
+
+
+
+                  }
+                } catch (error) {
+                  Swal.fire({
+                    text: error,
+                    icon: "error",
+                    // timer: 2000
+                  })
+                  // Handle network errors
+
+                }
+              }
+            });
+
+
+
+          })
+        </script>
+
+  </body>
+
+  </html>

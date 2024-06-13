@@ -1,0 +1,146 @@
+<%- include('head') %>
+
+  </head>
+
+  <body>
+
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class="content_wrapper">
+
+              <div class="container">
+                <!-- <h3 class="">Posts</h3> -->
+
+              </div>
+              <div class="container app_container ">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <h4 class="mb-4">Handover Posts</h4>
+                  </div>
+                  <div class="col-sm-6 text-sm-end">
+                    <a class="btn btn-sm btn-primary" href="<%=rootVar%>/draft">
+                      <i class="bi bi-bookmark-check"></i> Drafts Posts</a>
+                    <a class="btn btn-sm btn-warning" href="<%=rootVar%>/assigned">
+                      <i class="bi bi-file-earmark-arrow-down"></i> Assigned Posts</a>
+                  </div>
+
+                </div>
+
+
+                <table id="posttable" class="row-border table table-striped table-responsive wrap" width="100%">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Post Title</th>
+                      <th>Publish Date</th>
+                      <th>Category</th>
+                      <th class="none">Sub-Category</th>
+                      <th>Handover To</th>
+
+                      <th class="none">Comment</th>
+
+                    </tr>
+                  </thead>
+                  <tbody id="userInfo1">
+                    <% userPosts.forEach(posts=> { %>
+                      <tr class="odd">
+                        <td>
+                          <%= posts.id %>
+                        </td>
+                        <td>
+                         
+                            <% if ((posts.cat_slug=="" || posts.cat_slug==null) || (posts.post_name=="" || posts.post_name==null)) {%>
+
+                             <%=posts.post_title%>
+                              <%} else { if (posts.post_status=='publish' ) { %>
+
+                                  <a class="prev-link" target="_blank" href="<%=etVar%>/<%=posts.cat_slug%>/<%=posts.post_name%>">' +posts.post_title%></a>
+                                <%} else {%>
+                                  <a class="prev-link" target="_blank"
+                                    href="<%=etVar%>/preview/<%=posts.cat_slug%>/<%=posts.post_name%>"><%=posts.post_title%></a>
+                              <%} 
+                            } %>
+
+
+                        </td>
+                        <td>
+                          <%= (posts.post_date==null || posts.post_date=='Invalid Date' ) ? "-" : new
+                            Date(posts.post_date).toLocaleDateString('en-GB', { day: 'numeric' , month: 'short' ,
+                            year: 'numeric' }) %>
+                        </td>
+
+                        <td>
+                          <%= posts.cat_name %>
+                        </td>
+                        <td>
+                          <%= posts.subcat_name %>
+                        </td>
+                        <td>
+                          <%= posts.handover_to_name %>
+                        </td>
+                        <td>
+                          <%- posts.comments.split("<br>").at(-2) %>
+                        </td>
+
+                      </tr>
+                      <% }); %>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+
+          </div>
+
+
+
+      </div>
+      <%- include('contentFooter') %>
+
+
+        <script>
+
+          $(document).ready(function () {
+
+            $('#posttable').DataTable({
+              "order": [],
+              'columnDefs': [
+              { width: 80, targets: 0 },
+            { width: 400, targets: 1 },
+
+                // { width: 100, targets: 6 },
+                { width: 120, targets: 2 },
+
+              ],
+              'responsive': {
+                details: true
+              },
+            });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          })
+        </script>
+
+
+  </body>
+
+  </html>

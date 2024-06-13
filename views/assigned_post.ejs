@@ -1,0 +1,250 @@
+<%- include('head') %>
+
+  </head>
+
+  <body>
+
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class="content_wrapper">
+
+              <div class="container">
+                <!-- <h3 class="">Posts</h3> -->
+
+              </div>
+              <div class="container app_container ">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <h4 class="mb-4">Assigned Posts</h4>
+                  </div>
+                    <div class="col-sm-6 text-sm-end">
+                      <a class="btn btn-sm btn-primary" href="<%=rootVar%>/draft"> 
+                        <i class="bi bi-bookmark-check"></i> Drafts Posts</a>
+                        <a class="btn btn-sm btn-success" href="<%=rootVar%>/handover"> 
+                          <i class="bi bi-file-earmark-arrow-up"></i> Handover Posts</a>
+                    </div>
+                  
+                </div>
+               
+
+                <table id="posttable" class="row-border table table-striped table-responsive wrap" width="100%">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Post Title</th>
+                      <th>Publish Date</th>
+                      <th>Category</th>
+                      <th class="none">Sub-Category</th>
+                      <th class="none">Comment</th>
+                      <% if (permissions.find(perm=> perm.permission_name === "Post Management" && (perm.update == 1 ) && (['SEO Team','SEO Manager','Publisher'].includes(user.role)))) { %>
+                        <th class="text-center">Change Status</th>
+                      <%}%>
+                      <% if (permissions.find(perm=> perm.permission_name === "Post Management" && (perm.update == 1 ||perm.delete == 1))) { %>
+                        <th class="text-center">Action</th>
+                      <%}%>
+                     
+                    </tr>
+                  </thead>
+                  <tbody id="userInfo1">
+                    <% userPosts.forEach(posts=> { %>
+                      <tr class="odd">
+                        <td>
+                          <%= posts.id %>
+                        </td>
+                        <td>
+                          <% if ((posts.cat_slug=="" || posts.cat_slug==null) || (posts.post_name=="" || posts.post_name==null)) {%>
+
+                            <%=posts.post_title%>
+                             <%} else { if (posts.post_status=='publish' ) { %>
+
+                                 <a class="prev-link" target="_blank" href="<%=etVar%>/<%=posts.cat_slug%>/<%=posts.post_name%>">' +posts.post_title%></a>
+                               <%} else {%>
+                                 <a class="prev-link" target="_blank"
+                                   href="<%=etVar%>/preview/<%=posts.cat_slug%>/<%=posts.post_name%>"><%=posts.post_title%></a>
+                             <%} 
+                           } %>
+
+                        </td>
+                        <td>
+                          <%=  (posts.post_date == null || posts.post_date == 'Invalid Date') ? "-" : new Date(posts.post_date).toLocaleDateString('en-GB', { day: 'numeric' , month: 'short' ,
+                            year: 'numeric' }) %>
+                            
+                        </td>
+                        <td>
+                          <%= posts.cat_name %>
+                        </td>
+                        <td>
+                          <%= posts.subcat_name %>
+                        </td>
+
+                        <td >
+                          <%- posts.comments.split("<br>").at(-2) %>
+                        </td>
+                      
+                        <% if (permissions.find(perm=> perm.permission_name === "Post Management" && (perm.update == 1 ) && (['SEO Team','SEO Manager','Publisher'].includes(user.role)))) { %>
+                          <td class="text-center">
+                              <button class="btn btn-primary btn-sm publishBtn me-2" id="<%= posts.id %>">Publish</button>
+                          </td>
+                        <%}%>
+                        <% if (permissions.find(perm=> perm.permission_name === "Post Management" && (perm.update == 1 || perm.delete == 1))) { %>
+                          <td class="text-center">
+                            <% if (permissions.find(perm=> perm.permission_name === "Post Management" && (perm.update == 1 ))) { %>
+                              <a href="postedit/<%= posts.id %>" class="updateBtn me-2" id="<%= posts.id %>">
+                                <i class="bi bi-pencil-square"></i>
+                              </a>
+                            <%}%>
+                            <% if (permissions.find(perm=> perm.permission_name === "Post Management" && ( perm.delete == 1))) { %>
+                              <a class="deleteBtn" href="postdelete/<%= posts.id %>" id="<%= posts.id %>">
+                                <i class="bi bi-trash3-fill"></i>
+                              </a>
+                            <%}%>
+                          </td>
+                        <%}%>
+
+                       
+
+                      </tr>
+                      <% }); %>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+          
+          </div>
+
+
+
+      </div>
+      <%- include('contentFooter') %>
+    
+     
+
+      <script>
+
+        $(document).ready(function () {
+
+          $('#posttable').DataTable({
+            "order": [],
+            'columnDefs': [
+            { width: 80, targets: 0 },
+            { width: 400, targets: 1 },
+
+
+              // { width: 100, targets: 6 },
+             { responsivePriority: 2,width: 90,  targets: -1 },
+              { responsivePriority: 3, targets: -2 },
+              { width: 90, targets: -1 },
+            ],
+            'responsive': {
+              details: true
+            },
+          });
+
+
+          $('#posttable').on('click', '.publishBtn', async function () {
+            console.log('post Update btn clicked');
+            const updateId = this.id;
+            
+            const changeStatus =  "Publish";
+            // const updatedStatus = updatePostData.post_status == "publish" ? "draft" : "publish";
+            Swal.fire({
+              // text: "Are you sure to Delete",
+              // title: `${deleteCat}`,
+              // text: "You won't be able to revert this!",
+              icon: "warning",
+              html : `<span>Change Post id ${updateId} Status to</span><h4>${changeStatus.charAt(0).toUpperCase() + changeStatus.substr(1).toLowerCase()}</h4>`,
+              showCancelButton: true,
+              confirmButtonColor: "#3085d6",
+              cancelButtonColor: "#d33",
+              confirmButtonText: "Yes, Udpate Status!"
+
+            }).then(async (result) => {
+              if (result.isConfirmed) {
+                console.log('confimed');
+
+                try {
+                    const response = await fetch(`<%=rootVar%>/api/post/change_post_status/${updateId}`, {
+                      method: 'PUT',
+                    })
+
+                    if (response.ok) {
+                      Swal.fire({
+                        text: `Post Status changed to ${changeStatus}!`,
+                        icon: "success",
+
+                      }).then((result) => {
+                        location.reload();
+                      })
+                    }
+                    else {
+                      const responseData = await response.json();
+                      throw new Error(responseData.message);
+                    }
+                  } catch (error) {
+                    console.log(error);
+                    Swal.fire({
+                      text: error.message,
+                      icon: "error",
+                    });
+                    // console.log(error);
+                  }
+
+                // try {
+                //   const response = await fetch(`<%=rootVar%>/api/post/change_post_status/${updateId}`,
+                //   {
+                //     method: "PUT",
+                //   }).
+                //     then(response => {
+                //       if (!response.ok) {
+                //         throw new error(`Post Data Not received`);
+                //       }
+                //       return response.json();
+                //     }).then(data => {
+                //       console.log({data});
+                //       Swal.fire({
+                //         text: `Post Status changed to ${changeStatus}!`,
+                //         icon: "success",
+
+                //       }).then((result) => {
+                //         location.reload();
+                //       })
+
+                //     })
+                // } catch (error) {
+                //   Swal.fire({
+                //         text: `Post Status Change Error!`,
+                //         icon: "error",
+                //   });
+                //   // console.log(error);
+                // } 
+              } 
+            })
+          })
+
+
+         
+
+
+          
+         
+
+        
+
+        
+
+
+
+
+
+        })
+      </script>
+
+
+  </body>
+
+  </html>

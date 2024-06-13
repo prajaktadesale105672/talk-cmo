@@ -1,0 +1,483 @@
+<%- include('head') %>
+<link href="/assets/select2/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/select2/select2-bootstrap-5-theme.min.css" />
+  </head>
+
+  <body>
+
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class="content_wrapper">
+              
+              
+              
+              
+              <div class="container app_container">
+
+                <h4 class="mb-4 ">Add Media Image</h4>
+                <form id="addPostImage">
+
+                  <div class="row">
+                    <div class="col-md-6">
+                      <input type="hidden" id="session_user" name="session_user" value="<%= user.userid %>">
+                      <input type="hidden" id="session_user_name" name="session_user_name" value="<%= user.user_name %>">
+                     
+                      <div class="col-12 mb-2">
+                        <label class="searchLabel" for="postid">Post<span class="text-danger">*</span></label>
+                       <select class="form-select form-select-sm select-2 mb-3" id="postid" data-placeholder="Select Post" 
+                       data-parsley-required="true" data-parsley-errors-container="#selectError">
+                       <option></option>
+                     
+                            </select>
+                            <div id="selectError"></div>
+                      </div>
+                      <div class="col-12 mb-2">
+                        <label for="post_img" class="form-label">Media Image<span class="text-danger">*</span>
+                          </label>
+                        <input class="form-control form-control-sm" id="post_img" type="file" required
+                          data-parsley-required-message="Banner Image is required" >
+                      </div>
+
+
+                      <div id="errorMsg"></div>
+                      <div class="text-center">
+                        <button type="submit" class="btn btn-sm btn-primary mt-2 addBtn" >Add Media</button>
+                        <!-- </div> -->
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="text-center banner_wrapper mb-2">
+                        <img id="post_img_preview" class="post_img_preview"
+                          src="../images/blank-image.svg"
+                          alt="Image Preview">
+                      </div>
+                    </div>
+                  
+
+                  </div>
+                  <!-- <div class="row"> -->
+
+                </form>
+                <!-- <span id="login-status"></span> -->
+
+              </div>
+
+
+              <div class="container app_container mt-3">
+                <div class="row ">
+                  <div class="col-sm-6">
+                    <h4 class="mb-4">All Media Images</h4>
+                  </div>
+                </div>
+                <div class=" mt-3">
+                  <table id="post_image_data" class="postTable table ">
+                    <!-- <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Post Title</th>
+                        <th>Post Id</th>
+                        <th>Post Image</th>
+                        <th>User Name</th>
+                        <th class="none">Created At</th>
+                        <% if (["Admin", "Content Head" , "Marketing Head" ].includes(user.role)) { %>
+                          <th class="text-center">Action</th>
+                          <%}%>
+                            
+              
+                      </tr>
+                    </thead> -->
+                    <tbody></tbody>
+                  </table>
+              
+              
+                </div>
+              </div>
+
+
+
+            </div>
+          </div>
+      </div>
+
+
+       <!-- Modal -->
+      <div class="modal fade" id="updatePostImageModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="updatePostImageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="updatePostImageModalLabel">Edit Media</span>
+              </h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="updatePostImage">
+              <div class="modal-body">
+      
+                <div class="col-12 mb-2">
+                  <input type="hidden" id="update_imageId" name="update_imageId" value="">
+                  <div class="text-center updateWrapper mb-2">
+                    <img id="img_preview" class="updateImg" src="" alt="Image Preview">
+                  </div>
+                  <label for="udpate_post_img" class="form-label">Media Image<span class="text-danger">*</span></label>
+                  <input class="form-control form-control-sm" id="udpate_post_img" type="file" required>
+                  <div id="errorMsg"></div>
+                </div>
+      
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-sm btn-warning">Update</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+    
+
+
+      <%- include('contentFooter') %>
+
+      <!-- <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <strong class="me-auto">Bootstrap</strong>
+          <small>11 mins ago</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          Hello, world! This is a toast message.
+        </div>
+      </div> -->
+
+      <script src="/assets/select2/select2.min.js"></script>
+        <script>
+
+
+
+$(document).on('click', '.copyButton', function() {
+  var imagePath = $(this).data('location');
+  navigator.clipboard.writeText(imagePath)
+    .then(function() {
+      // $('.toast').toast('show');
+      alert('Copied the path: ' + imagePath);
+    })
+    .catch(function(error) {
+      console.error('Failed to copy path:', error);
+    });
+});
+
+
+
+
+          $(document).ready(function () {
+
+            // $('.toast').toast('show');
+
+           
+
+            
+          
+
+
+            $('#updatePostImage').submit(async function (e) {
+              e.preventDefault();
+              if ($(this).parsley().isValid()) {
+
+                const update_imageId = $("#update_imageId").val();
+                const post_img = $('#udpate_post_img')[0];
+
+                const formData = new FormData();
+                formData.append('update_imageId', update_imageId);
+                if (post_img.files[0]) {
+                  formData.append('post_img', post_img.files[0]);
+                }
+
+                try {
+                  const response = await fetch('<%=rootVar%>/api/post/update_post_image',{
+                     method: "PUT",
+                    body: (formData),
+                  });
+
+
+                  if (response.ok) {
+
+                    setTimeout(() => {
+                      $("#updatePostImageModal").modal('hide');
+                      Swal.fire({
+                        text: `Post Image Updated!`,
+                        icon: "success",
+
+                      }).then((result) => {
+
+                        location.reload();
+                      })
+
+                    }, 500)
+                   
+                  }
+                  else {
+                    const responseData = await response.json();
+                    throw new Error(responseData.error);
+                  }
+                } catch (error) {
+                  Swal.fire({
+                    text: error.message,
+                    icon: "error",
+                  });
+                  // console.log(error);
+                }
+
+
+              }
+
+
+            });
+
+       
+            $('#post_image_data').on('click', '.updateBtn', async function () {
+              var imageID = this.id;
+              try {
+                const response = await fetch(`<%=rootVar%>/api/post/post_img/${imageID}`);
+
+                if (!response.ok) {
+                  throw new error(`Post Image Fetch Error`);
+                }
+                const data = await response.json();
+                $('#update_imageId').val(data[0].id);
+                $('#img_preview').attr('src', `<%=etVar%>${data[0].post_image}`);
+                $("#updatePostImageModal").modal('show');
+
+
+              } catch (error) {
+                Swal.fire({
+                  text: `Post Image Fetch Error!`,
+                  icon: "error",
+                });
+                // console.log(error);
+              }
+
+
+
+
+            });
+
+            $('#post_image_data').on('click', '.deleteBtn', async function () {
+              var deleteID = this.id;
+              Swal.fire({
+                // text: "Are you sure to Delete",
+                // title: `${deleteCat}`,
+                // text: "You won't be able to revert this!",
+                icon: "warning",
+                html: `<span>Are you sure to Delete Post Image? You won't be able to revert this!</span>`,
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+
+              }).then(async (result) => {
+                if (result.isConfirmed) {
+                  try {
+                    const response = await fetch(`<%=rootVar%>/api/post/delete_post_Image/${deleteID}`, {
+                      method: "DELETE",
+                  });
+
+                    if (!response.ok) {
+                      throw new error(`Post Image Delete Error`);
+                    }
+                    const data = await response.json();
+
+                    // Display success message using Swal
+                    await Swal.fire({
+                      text: `Post Image Deleted!`,
+                      icon: "success",
+                    });
+
+                    // Reload the page after deletion
+                    location.reload();
+                  } catch (error) {
+                    Swal.fire({
+                      text: `Post Image Delete Error!`,
+                      icon: "error",
+                    });
+                    // console.log(error);
+                  }
+                }
+              })
+            });
+
+
+          
+
+
+            $("#postid").select2({
+              allowClear: true,
+                theme: 'bootstrap-5',
+                containerCssClass: "select2--small",
+                dropdownCssClass: "select2--small",
+                placeholder: $( this ).data( 'placeholder' ),
+                closeOnSelect: true,
+              ajax: {
+                url: function (params) {
+                  if(params.term){
+                  return '<%=rootVar%>/api/post/search_post_list/' + params.term;
+                }
+                },
+                delay: 500,
+
+                
+                processResults: (data, params) => {
+                  if(data.postData){
+                  const results = data.postData.map(item => {
+                    return {
+                      id: item.id,
+                      text: item.post_title,
+                    };
+                  });
+                  return {
+                    results: results,
+                  }
+                }
+                },
+              },
+            });
+            
+
+           
+
+            var _URL = window.URL || window.webkitURL;
+
+            
+            $("#post_img").change(function () {
+              var input = this;
+              if (input.files && input.files[0]) {
+                $('#post_img_preview').attr('src', URL.createObjectURL(input.files[0]));
+              }
+            });
+
+            $("#udpate_post_img").change(function () {
+              var input = this;
+              if (input.files && input.files[0]) {
+                $('#img_preview').attr('src', URL.createObjectURL(input.files[0]));
+              }
+            });
+
+           
+            $('#addPostImage,#updatePostImage').parsley();
+
+
+
+            $('#addPostImage').submit(async function (e) {
+              e.preventDefault();
+              // Check if the form is valid
+              if ($(this).parsley().isValid()) {
+                const session_user = $("#session_user").val();
+                const postid = $("#postid").val();
+                const session_user_name = $("#session_user_name").val();
+                const post_img = $('#post_img')[0];
+
+                const formData = new FormData();
+                formData.append('session_user', session_user);
+                formData.append('postid', postid);
+                formData.append('session_user_name', session_user_name);
+                formData.append('post_img', post_img.files[0]);
+                try {
+                  const response = await fetch("<%=rootVar%>/api/post/post_image", {
+                    method: "POST",
+                    body: (formData),
+                  });
+
+                  if (response.ok) {
+                    Swal.fire({
+                      text: "Post Image has been uploaded successfully!",
+                      icon: "success",
+                      showCancelButton: false,
+                      confirmButtonText: 'OK',
+                      // timer: 2000
+                    }).then((result) => {
+                      // window.location.href = '<%=rootVar%>/post-images';
+                      window.location.reload();
+                    })
+                  } else {
+                    const responseData = await response.json();
+                    throw new Error(responseData.message);
+                  }
+                } catch (error) {
+                  Swal.fire({
+                    text: error,
+                    icon: "error",
+                  })
+                }
+              }
+            });
+
+
+            function loadData() {
+
+              var dataTable = $('#post_image_data').DataTable({
+                'processing': true,
+                'serverSide': true,
+                'serverMethod': 'get',
+                "autoWidth": false,
+                "pageLength": 20,
+                language: {
+                  infoFiltered: ""
+                },
+                'responsive': {
+                  details: true
+                },
+                'ajax': {
+                  'url': `<%=rootVar%>/api/post/post_image_all`,
+                  'type': 'get',
+                },
+                'aaSorting': [],
+                "ordering": false,
+                'columns': [
+                  // { data: 'id' },
+                  // { data: 'post_title' },
+                  {
+                    data: null,
+                    render: function (data) {
+                      
+                        return '<p class=" line-clamp2 mb-0">'+data.post_title+'</p>';
+                     
+                    }
+                  },
+                  // { data: 'post_id' },
+                  // { data: 'post_image' },
+                  {
+                    data: null,
+                    render: function (data) {
+                      
+                        return '<div class="text-center"><img src="<%=etVar%>'+data.post_image+'"></div>';
+                     
+                    }
+                  },
+                  {
+                    data: null,
+                    render: function (data) {
+                      
+                        return '<div class="card_btn"><% if (permissions.find(perm=> perm.permission_name === "Post Management" && (perm.update == 1 ))) { %><button class="me-2 btn btn-sm btn-outline-warning updateBtn" href="postedit/' + data.id + '" id="' + data.id + '"> <i class="bi bi-pencil-square"></i> </button> <%}%> <% if (permissions.find(perm=> perm.permission_name === "Post Management" && ( perm.delete == 1))) {%> <button class="btn me-2 btn-sm btn-outline-danger deleteBtn" id="' + data.id + '"> <i class="bi bi-trash3-fill"></i> </button> <%}%><button class="copyButton btn btn-sm btn-success" data-location="<%=etVar%>'+data.post_image+'"><i class="bi bi-copy"></i> Copy</button> </div>';
+                     
+                    }
+                  },
+                 
+
+
+
+                ]
+              });
+
+            }
+            loadData()
+
+          })
+        </script>
+
+
+  </body>
+
+  </html>

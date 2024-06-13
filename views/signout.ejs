@@ -1,0 +1,77 @@
+<script>
+submitButton = document.querySelector('#kt_sign_out');
+submitButton.addEventListener('click', function (e) {
+    // Prevent button default action
+    e.preventDefault();
+    Swal.fire({
+        text: "Are you sure you want to Sign-Out?",
+        icon: "warning",
+        showCancelButton: true,
+        buttonsStyling: false,
+        confirmButtonText: "Yes, Sign-out!",
+        cancelButtonText: "No, cancel",
+        customClass: {
+            confirmButton: "btn fw-bold btn-danger",
+            cancelButton: "btn fw-bold btn-active-light-primary"
+        }
+    }).then(function (result) {
+
+        if (result.value) {
+
+            Swal.fire({
+                text: "Sign-out Complete!.",
+                icon: "success",
+                buttonsStyling: false,
+                confirmButtonText: "Ok, got it!",
+                customClass: {
+                    confirmButton: "btn fw-bold btn-primary",
+                }
+            }).then(function () {
+
+                $.ajax({
+                    url: "<%=rootVar%>/api/users/logout",
+                    type: "POST",
+                    success: function (f) {
+                        
+                        function preventBack() { window.history.forward(); }
+                        setTimeout("preventBack()", 0);
+                        window.onunload = function () { null };
+                       window.location.replace("<%=rootVar%>/login");
+                    },
+                    error: function (f, r, o) {
+                        Swal.fire({
+                            text: "Sorry, please try again.",
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-primary"
+                            }
+                        });
+                    },
+                });
+
+
+
+
+
+            });
+
+        } else if (result.dismiss === 'cancel') {
+            Swal.fire({
+                text: "Sign Out request cancelled.",
+                icon: "error",
+                buttonsStyling: false,
+                confirmButtonText: "Ok, got it!",
+                customClass: {
+                    confirmButton: "btn fw-bold btn-primary",
+                }
+            });
+        }
+    });
+
+
+
+
+});
+</script>

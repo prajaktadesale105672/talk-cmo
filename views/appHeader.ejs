@@ -1,0 +1,49 @@
+<div class="app-top sticky-top">
+
+    <div class="app-header">
+        <div class="header-left">
+            <div class="logo-Wrapper"><a href="index.html" class="logo">
+                    <a href="<%=rootVar%>/dashboard">
+                        <img width="150" height="60" style="width: 80%;" src="/uploads\TC-spacing-white-1.png" alt=""
+                            class="etlogo">
+                    </a>
+
+            </div>
+            <div class="custom-menu">
+                <!-- <button type="button" id="sidebarCollapse" class="hamburger_btn">
+                    <i class="bi bi-list"></i>
+
+                </button> -->
+            </div>
+        </div>
+
+
+        <div class="app-wrapper">
+            <!-- <i class="bi bi-bell"></i> -->
+            <div class="dropdown">
+                <a class="dropdown-toggle d-flex align-items-end" href="#" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <div>
+                        <img src="https://www.kingsresearch.com/kings-admin/assets/media/avatars/300-1.jpg" alt=""
+                            class="hero-img">
+                    </div>
+                    <div class="ms-2">
+                        <p class="m-0 lh-1">
+                            <%= user.user_name %>
+                        </p>
+                        <p class="m-0 fw-light" style="font-size: 12px;">
+                            <%= user.role %>
+                        </p>
+                    </div>
+                </a>
+                <ul class="dropdown-menu">
+                    <!-- <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li> -->
+                    <li><a class="dropdown-item logoutBtn btn btn-warning" id="logoutBtn"><i
+                                class="bi bi-box-arrow-in-right"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>

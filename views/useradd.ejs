@@ -1,0 +1,505 @@
+<%- include('head') %>
+
+  </head>
+
+  <body>
+
+    <%- include('appHeader') %>
+      <div class="wrapper d-flex align-items-stretch">
+        <%- include('sidebar') %>
+
+          <!-- Page Content  -->
+          <div id="content" class="">
+            <div class="content_wrapper">
+              <div class="container">
+
+
+              </div>
+              <div class="container">
+
+
+              </div>
+              <% if (permissions.find(perm=> perm.permission_name === "User Management" && perm.create == 1)) { %>
+                <div class="container app_container">
+                  <h4 class="mb-4">Add User</h4>
+                  <form id="userForm">
+                    <div class="row">
+                      <div class="col-md-6 mb-2">
+                        <label for="user_name" class="form-label">User Name<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-sm" id="user_name" name="user_name"
+                          data-parsley-pattern="^(?![\d,]+$)[A-Za-z\d'.,@-][A-Za-z\d'.,@\s-]*[A-Za-z\d'.,@-]$" required
+                          data-parsley-required-message="  Name is required">
+                      </div>
+                      <!-- </div> -->
+                      <div class="col-md-6 mb-2">
+                        <label for="email" class="form-label">Email<span class="text-danger">*</span></label>
+                        <input type="email" class="form-control form-control-sm" id="email" name="email"
+                          data-parsley-pattern="^(?!.*-@)(?!.*\.\.)(?!.*^\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                          required data-parsley-required-message="Email is required">
+                      </div>
+
+
+
+                      <div class="col-md-6 mb-2">
+
+                        <label for="role" class="form-label">User Role<span class="text-danger">*</span></label>
+                        <select class="form-select form-select-sm " id="role" name="role"
+                          aria-label="Small select example" required
+                          data-parsley-required-message="User role is required">
+                          <option value="" selected disabled>Select User Role</option>
+
+                          <%rolesData.forEach(function(role){%>
+                            <option value="<%=role.id%>">
+                              <%=role.role%>
+                            </option>
+                            <%})%>
+                        </select>
+
+                      </div>
+                      <div class="col-md-6 mb-2">
+                        <label for="display_name" class="form-label">Display Name<span
+                            class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-sm" id="display_name" name="display_name"
+                          data-parsley-pattern="^(?![\d,]+$)[A-Za-z\d'.,@-][A-Za-z\d'.,@\s-]*[A-Za-z\d'.,@-]$" required
+                          data-parsley-required-message="  Display Name is required">
+                      </div>
+                      <div class="col-md-6 mb-2">
+                        <label for="password" class="form-label">
+                            Password<span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <input type="password" class="form-control form-control-sm" id="password" name="password"
+                                required data-parsley-required-message="Password is required" data-parsley-minlength="8"
+                                data-parsley-minlength-message="Password should be at least 8 characters"
+                                data-parsley-maxlength-message="Password should not exceed 20 characters"
+                                data-parsley-pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*!_.-])[A-Za-z\d@#$%^&*!_.-]{8,}$"
+                                data-parsley-pattern-message="Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character. It should be more than 8 characters."
+                                data-parsley-trigger="input change keyup"
+                                data-parsley-errors-container="#pass-error">
+                            <span class="input-group-text pass-toggle"><i class="bi bi-eye eye-icon pass"></i></span>
+                        </div>
+                        <div id="pass-error"></div>
+                    </div>
+                   
+                      <div class="col-md-6 mb-2">
+
+                        <label for="password" class="form-label">
+                          Confirm Password<span class="text-danger">*</span>
+
+                        </label>
+                        <div class="input-group">
+                        
+                          <input type="password" class="form-control form-control-sm" id="cpassword" name="cpassword"
+                            required data-parsley-equalto="#password" data-parsley-matchPassword
+                            data-parsley-errors-container="#cpass-error">
+                            <span class="input-group-text cpass-toggle"><i class="bi bi-eye eye-icon cpass"></i></span>
+                        </div>
+                        <div id="cpass-error"></div>
+
+
+
+                      </div>
+
+                     
+
+                    </div>
+
+                    <div class="col-12  text-center mb-2">
+                      <button type="submit" class="btn btn-sm btn-primary mt-2">Add User</button>
+                    </div>
+                  </form>
+                  <span id="login-status"></span>
+
+                </div>
+                <%}%>
+
+                  <div class="container app_container mt-4">
+                    <h4 class="mb-4">Users List</h4>
+                    <table id="userTable" class=" row-border table table-striped table-responsive wrap" width="100%">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Name</th>
+                          <th>Email</th>
+                          <th>Role</th>
+                          <th>Created At</th>
+                          <th>Updated At</th>
+                          <th>Status</th>
+                          <% if (permissions.find(perm=> perm.permission_name === "User Management" && (perm.update == 1
+                            || perm.delete == 1))) { %>
+                            <th class="text-center">Action</th>
+                            <%}%>
+                        </tr>
+                      </thead>
+                      <tbody id="">
+                        <% userList.forEach(userList=> { %>
+                          <tr>
+                            <td>
+                              <%= userList.user_id %>
+                            </td>
+                            <td>
+                              <%= userList.display_name %>
+                            </td>
+                            <td>
+                              <%= userList.user_email %>
+                            </td>
+                            <td>
+                              <%= userList.role %>
+                            </td>
+                            <td>
+                              <%= new Date(userList.created_at).toLocaleDateString('en-GB', { day: 'numeric' ,
+                                month: 'short' ,year: 'numeric' }) %>
+                            </td>
+                            <td>
+                              <%= new Date(userList.updated_at).toLocaleDateString('en-GB', { day: 'numeric' ,
+                                month: 'short' ,year: 'numeric' }) %>
+                            </td>
+
+                            <td>
+                              <span class="fw-bold text-<%= userList.user_status ? 'success' : 'danger' %>">
+                                <%= userList.user_status ? 'Active' : 'Inactive' %>
+                              </span>
+                            </td>
+                            <% if (permissions.find(perm=> perm.permission_name === "User Management" && (perm.update ==
+                              1 || perm.delete == 1))) { %>
+                              <td>
+                                <div class="text-center">
+                                  <% if (permissions.find(perm=> perm.permission_name === "User Management" &&
+                                    (perm.update == 1 ))) { %>
+                                    <!-- <a href="" class="updateUser me-2" id="<%= userList.user_id %>">
+                                      <i class="bi bi-pencil-square"></i>
+                                    </a> -->
+                                    <span class=" me-2">
+                                      <span class="badge rounded-pill text-bg-warning updateUser"
+                                        id="<%= userList.user_id %>">Update</span>
+
+                                    </span>
+                                    <%}%>
+
+                                </div>
+                              </td>
+                              <%}%>
+                          </tr>
+                          <% }); %>
+                      </tbody>
+                    </table>
+                  </div>
+
+            </div>
+
+          </div>
+      </div>
+
+
+      <!-- Modal -->
+      <div class="modal fade" id="updateUserModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="updateCategoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="updateUserModalLabel">Edit User - <span id="editUserName"></span></h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="update-user">
+              <div class="modal-body">
+
+                <div class="col-12 mb-2">
+                  <label for="user_name" class="form-label">User Name<span class="text-danger">*</label>
+                  <input type="hidden" id="udpate_user_id" name="user_id" value="">
+                  <input type="text" class="form-control form-control-sm" id="udpate_user_name" name="udpate_user_name"
+                    data-parsley-pattern="^(?![\d,]+$)[A-Za-z\d'.,@-][A-Za-z\d'.,@\s-]*[A-Za-z\d'.,@-]$" required
+                    data-parsley-required-message="  Name is required">
+                </div>
+                <div class="col-12 mb-2">
+                  <label for="display_name" class="form-label">Display Name<span class="text-danger">*</label>
+                  <input type="text" class="form-control form-control-sm" id="udpate_display_name"
+                    name="udpate_display_name"
+                    data-parsley-pattern="^(?![\d,]+$)[A-Za-z\d'.,@-][A-Za-z\d'.,@\s-]*[A-Za-z\d'.,@-]$" required
+                    data-parsley-required-message="Display name is required">
+                </div>
+                <div class="col-12 mb-2">
+                  <label for="user_email" class="form-label">Email<span class="text-danger">*</label>
+                  <input type="email" class="form-control form-control-sm" id="udpate_user_email"
+                    name="udpate_user_email"
+                    data-parsley-pattern="^(?!.*-@)(?!.*\.\.)(?!.*^\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                    required data-parsley-required-message="Email is required">
+                </div>
+                <div class="col-12 mb-2">
+                  <label for="status" class="form-label">Status</label>
+                  <select class="form-select form-select-sm" id="udpate_user_status" name="udpate_user_status">
+                    <option value="active" <%=userList.status==='Active' ? 'selected' : '' %>>Active</option>
+                    <option value="inactive" <%=userList.status==='Inactive' ? 'selected' : '' %>>Inactive</option>
+                  </select>
+                </div>
+                <div class="col-12 mb-2">
+
+                  <label for="role" class="form-label">User Role<span class="text-danger">*</label>
+                  <select class="form-select form-select-sm " id="udpate_role" name="udpate_role"
+                    aria-label="Small select example" required data-parsley-required-message="User Role is required">
+                    <option value="" selected disabled>Select User Role</option>
+
+                    <%rolesData.forEach(function(role){%>
+                      <option value="<%=role.id%>">
+                        <%=role.role%>
+                      </option>
+                      <%})%>
+                  </select>
+
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-sm btn-warning">Update</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+
+
+      <%- include('contentFooter') %>
+
+        <script>
+          $(document).ready(function () {
+
+            $('#togglePassword').on('click', function () {
+              const passwordField = $('#password');
+              const passwordFieldType = passwordField.attr('type');
+              if (passwordFieldType === 'password') {
+                passwordField.attr('type', 'text');
+                $(this).removeClass('fa-eye-slash').addClass('fa-eye');
+              } else {
+                passwordField.attr('type', 'password');
+                $(this).removeClass('fa-eye').addClass('fa-eye-slash');
+              }
+            });
+
+           
+
+            $('.pass-toggle').click(function () {
+              console.log("pass-toggle");
+              if ($('#password').attr('type') === 'password') {
+                $('#password').attr("type", "text");
+                $('.pass').removeClass('bi-eye')
+                $('.pass').addClass('bi-eye-slash')
+              }
+              else {
+                $('#password').attr("type", "password");
+                $('.pass').removeClass('bi-eye-slash')
+                $('.pass').addClass('bi-eye')
+              }
+
+            })
+
+            $('.cpass-toggle').click(function () {
+              console.log("cpass-toggle");
+              if ($('#cpassword').attr('type') === 'password') {
+                $('#cpassword').attr("type", "text");
+                $('.cpass').removeClass('bi-eye')
+                $('.cpass').addClass('bi-eye-slash')
+              }
+              else {
+                $('#cpassword').attr("type", "password");
+                $('.cpass').removeClass('bi-eye-slash')
+                $('.cpass').addClass('bi-eye')
+              }
+
+            })
+
+            $('#userForm, #update-user').parsley();
+
+            // // Handle Parsley validation errors for the password field
+            // $('#password').on('input change keyup', function () {
+            //   if ($('#userForm').parsley().isValid('password', true)) {
+            //     // No errors, clear the error container
+            //     $('#password').empty();
+            //   } else {
+            //     // Display errors in the specified container
+            //     $('#password').html($('#password').parsley().getErrorsMessages().join('<br>'));
+            //   }
+            // });
+
+
+            // Handle Parsley validation errors for the password field
+
+
+
+            $('#userTable').DataTable({
+              'columnDefs': [
+                { width: 30, targets: 0 },
+
+                // { width: 100, targets: 6 },
+                { responsivePriority: 2, targets: -1 },
+                { responsivePriority: 3, targets: -2 },
+              ],
+
+            });
+
+            $('#userTable').on('click', '.updateUser', async function () {
+              console.log('update btn clicked');
+              console.log(this.id);
+              const updateId = this.id;
+              try {
+                const response = await fetch(`api/users/${updateId}`).then(response => {
+                  if (!response.ok) {
+                    throw new error(` User data not received`);
+                  }
+                  return response.json();
+                }).then(data => {
+                  console.log(data);
+                  const userInfo = data.data[0];
+                  // console.log(userInfo.user_name);
+                  // console.log(userInfo.user_status);
+                  // console.log(userInfo.role);
+
+                  $('#udpate_user_name').val(userInfo.user_name);
+                  $('#udpate_user_email').val(userInfo.user_email);
+                  $('#udpate_display_name').val(userInfo.display_name);
+                  // $('#udpate_user_status').val(userInfo.user_status);
+                  $('#udpate_user_id').val(userInfo.user_id);
+                  $('#udpate_role').val(userInfo.role_id);
+                  $('#editUserName').html(userInfo.display_name);
+                  if (userInfo.user_status === 1) {
+                    $('#udpate_user_status').val('active');
+                  } else {
+                    $('#udpate_user_status').val('inactive');
+                  }
+                  $("#updateUserModal").modal('show');
+
+                })
+              } catch (error) {
+                console.log(error);
+              }
+            })
+
+            $('#update-user').submit(async function (e) {
+              e.preventDefault();
+              if ($(this).parsley().isValid()) {
+
+                const uName = $('#udpate_user_name').val();
+                const uEmail = $('#udpate_user_email').val();
+                const uDisplay_name = $('#udpate_display_name').val();
+                const uSatus = $('#udpate_user_status').val();
+                const statusValue = (uSatus === 'active') ? '1' : '0';
+                const uId = $('#udpate_user_id').val();
+                const role_id = $("#udpate_role").val();
+
+                const data = {
+                  user_name: uName,
+                  user_email: uEmail,
+                  display_name: uDisplay_name,
+                  user_status: statusValue,
+                  role_id: role_id
+
+                }
+
+                console.log('edit user info', data.user_status);
+
+                try {
+                  const response = await fetch(`api/users/edit/${uId}`, {
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    method: 'PUT',
+                    body: JSON.stringify(data)
+                  })
+
+                  if (response.ok) {
+
+                    setTimeout(() => {
+                      $("#updateCategoryModal").modal('hide');
+                      Swal.fire({
+                        text: `User details has been updated!`,
+                        icon: "success",
+
+                      }).then((result) => {
+
+                        location.reload();
+                      })
+
+                    }, 500)
+                  }
+                  else {
+                    const responseData = await response.json();
+                    throw new Error(responseData.error);
+                  }
+                } catch (error) {
+                  Swal.fire({
+                    text: error,
+                    icon: "error",
+                    // timer: 2000
+                  })
+                }
+
+
+              }
+
+
+            });
+
+
+
+            // add user details 
+
+            $('#userForm').submit(async function (e) {
+              e.preventDefault();
+              // This event handler is triggered after Parsley.js validation is complete.
+              console.log('form submit');
+              // Check if the form is valid
+              if ($(this).parsley().isValid()) {
+                console.log('chceing valid');
+                const user_name = $("#user_name").val();
+                const user_email = $("#email").val();
+                const user_password = $("#password").val();
+                const display_name = $("#display_name").val();
+                const role_id = $("#role").val();
+                // const profile = $('#user_profile')[0];
+                const data = { user_name, user_email, user_password, role_id, display_name };
+                try {
+                  const response = await fetch("api/users/register", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+
+                  });
+
+                  if (response.ok) {
+                    console.log('success');
+                    Swal.fire({
+                      text: "User has been created successfully!",
+                      icon: "success",
+                      showCancelButton: false,
+                      confirmButtonText: 'OK',
+                      // timer: 2000
+                    }).then((result) => {
+                      window.location.reload();
+
+                    })
+
+                  } else {
+                    const responseData = await response.json();
+                    console.log({ responseData });
+                    throw new Error(responseData.error);
+
+                  }
+                } catch (error) {
+                  console.log({ error });
+                  Swal.fire({
+                    text: error.message,
+                    icon: "error",
+                    // timer: 2000
+                  })
+
+                }
+              }
+            });
+          })
+        </script>
+
+
+  </body>
+
+  </html>
